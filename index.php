@@ -3,19 +3,19 @@
 require_once 'vendor/autoload.php';
 
 use Bcca2\Steam\BancoUsuarios;
+use Bcca2\Steam\Menu;
 
 $bancoUsuarios = new BancoUsuarios;
+$menu = new Menu;
 $statusLogin = false;
-$opcaoTelaLogin;
-$opcaoTelaMenuPrincipal;
+$opcaoTelaLogin = 0;
+$opcaoTelaMenuPrincipal = 0;
 
-while(!$statusLogin){
-
+while($opcaoTelaLogin != 3 && $opcaoTelaMenuPrincipal != 5){
     //Loop para login
     do{
-        echo "\nSeja Bem vindo!\n1- Registar.\n2- Logar.\n3- Sair.\nSelecione uma das opcoes acima: ";
+        $menu->printarMenuInicial();
         $opcaoTelaLogin = (int)readline();
-
         switch($opcaoTelaLogin){
             case 1:
                 $bancoUsuarios->RegistrarUsuarios();
@@ -27,12 +27,12 @@ while(!$statusLogin){
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
                 break;
         }
-    }while($opcaoTelaLogin != 3 && !($statusLogin == true));
+    }while($opcaoTelaLogin != 3 && $statusLogin == false);
 
     //Loop para continuar na conta
     if($statusLogin){
         do{
-            echo "\n1- Biblioteca.\n2- Loja.\n3- Usuario.\n4- Desloggar.\n5- Sair.\nSelecione uma das opcoes acima: ";
+            $menu->printarMenuPrincipal();
             $opcaoTelaMenuPrincipal = (int)readline();
 
             switch($opcaoTelaMenuPrincipal){
@@ -43,17 +43,16 @@ while(!$statusLogin){
                     //Loja;
                     break;
                 case 3:
-                    $bancoUsuarios->GetCurrentUser()->MenuUsuario();
+                    $menu->ControlarFluxoUsuario($bancoUsuarios->GetCurrentUser());
                     break;
                 case 4:
                     $statusLogin = false;
-                    $opcaoTelaMenuPrincipal = 5;
                     break;
                 case 5:
                     echo "\nAdeus meu camarada tenha um bom dia.\n";
                     break;
             }  
-        }while($opcaoTelaMenuPrincipal != 5);
+        }while($opcaoTelaMenuPrincipal != 5 && $opcaoTelaMenuPrincipal != 4);
     }
 }
 ?>
