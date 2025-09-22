@@ -2,14 +2,14 @@
 
 namespace Bcca2\Steam;
 
-abstract class Jogos {
+abstract class Jogo {
     protected $nome;
     protected $descricao;
     protected $data_de_lancamento;
     protected $desenvolvedora;
     protected $distribuidora;
     protected $genero;
-    private string $conquistas;
+    protected $conquistas;
 
     public function set_informacoes($nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas){
         $this->nome = $nome;
