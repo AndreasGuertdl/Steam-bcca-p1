@@ -4,12 +4,10 @@ require_once 'vendor/autoload.php';
 
 use Bcca2\Steam\BancoUsuarios;
 use Bcca2\Steam\Menu;
-use Bcca2\Steam\BibliotecaUsuario;
 use Bcca2\Steam\BibliotecaLoja;
 use Bcca2\Steam\JogoLoja;
 
 $bancoUsuarios = new BancoUsuarios;
-$bibliotecaUsuario = new BibliotecaUsuario;
 $bibliotecaLoja = new BibliotecaLoja;
 $menu = new Menu;
 $statusLogin = false;
@@ -48,10 +46,10 @@ while($opcaoTelaLogin != 3 && $opcaoTelaMenuPrincipal != 5){
 
             switch($opcaoTelaMenuPrincipal){
                 case 1:
-                    $menu->ControlarFluxoBiblioteca($bibliotecaUsuario);
+                    $menu->ControlarFluxoBiblioteca($bancoUsuarios->GetCurrentUser()->GetUserBiblioteca());
                     break;
                 case 2:
-                    $menu->ControlarFluxoLoja($bibliotecaLoja, $bibliotecaUsuario, $bancoUsuarios->GetCurrentUser());
+                    $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $bancoUsuarios->GetCurrentUser());
                     break;
                 case 3:
                     $menu->ControlarFluxoUsuario($bancoUsuarios->GetCurrentUser());

@@ -1,28 +1,31 @@
 <?php
 
 namespace Bcca2\Steam;
+use Bcca2\Steam\BibliotecaUsuario;
 
 class Usuario {
     private string $username;
     private string $senha;
     protected float $saldo = 0;
+    private BibliotecaUsuario $biblioteca;
 
     function __construct(string $username, string $senha)
     {
+        $this->biblioteca = new BibliotecaUsuario;
         $this->username = $username;
         $this->senha = $senha;
     }
-
     public function GetUsername() : string {
         return $this->username;
     }
-
     public function GetSenha() : string {
         return $this->senha;
     }
-
     public function GetSaldo() : float {
         return $this->saldo;
+    }
+    public function GetUserBiblioteca() : BibliotecaUsuario {
+        return $this->biblioteca;
     }
 
     public function AdicionarSaldo() : void {
