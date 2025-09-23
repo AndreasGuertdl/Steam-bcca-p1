@@ -37,13 +37,31 @@ class Usuario {
     }
 
     public function MudarUsuario() : void {
-        echo "\nDigite o seu novo username: ";
-        $this->username = readline();
+        $username = null;
+        do{
+            echo "\nDefina o seu novo username.\nEle deve conter de 3 a 12 caracteres: ";
+            $username = readline();
+            if($username == null || strlen($username) < 3 || strlen($username) > 12){
+                echo "\n!!!Usuario invalido!!!\nO usuario digitado deve conter de 3 a 12 caracteres.\n";
+                $username = null;
+            }else{
+                $this->username = $username;
+            }
+        }while($username == null);
     }
 
     public function MudarSenha() : void {
-        echo "\nDigite sua nova senha: ";
-        $this->senha = readline();
+        $senha = null;
+        do{
+            echo "\nDefina a sua nova senha.\nEla deve conter de 3 a 12 caracteres: ";
+            $senha = readline();
+            if($senha == null || strlen($senha) < 3 || strlen($senha) > 12){
+                echo "\n!!!Senha invalida!!!\nA senha digitada deve conter de 3 a 12 caracteres.\n";
+                $senha = null;
+            }else{
+                $this->senha = $senha;
+            }
+        }while($senha == null);
     }
 
     public function __toString()
