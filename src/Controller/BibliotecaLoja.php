@@ -66,7 +66,7 @@ class BibliotecaLoja extends Biblioteca
         }
     }
 
-    public function GetJogoById(int $id): Jogo|false
+    public function GetJogoById(int $id): JogoLoja|false
     {
         $jogoEscolhido = false;
         

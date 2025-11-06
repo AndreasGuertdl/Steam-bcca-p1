@@ -114,7 +114,7 @@ class MenuController
         } while ($this->opcaoMenu != 2);
     }
 
-    public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, Usuario $usuario)
+    public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController)
     {
         do {
             $this->PrintarMenuLoja();
@@ -130,9 +130,14 @@ class MenuController
 
                     echo "\nDigite o ID do jogo que gostaria de comprar: ";
                     $idEscolhido = (int)readline();
-                    
-                    $bibliotecaUsuario->comprarJogo($idEscolhido, $usuario->GetSaldo());
-                    
+
+                    $jogoEscolhido = $bibliotecaLoja->GetJogoById($idEscolhido);
+
+                    if($jogoEscolhido != false){
+                        if($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())){
+                            $usuarioController->debitarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
+                        }
+                    }
                     break;
             }
             echo $bibliotecaLoja->statusLoja->GetLojaInformation();
