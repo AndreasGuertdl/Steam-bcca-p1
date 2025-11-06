@@ -1,0 +1,21 @@
+Controller:
+    LeEscreveCsv
+        UsuarioController:
+        LoginController
+        Biblioteca
+            BibliotecaLoja
+            BibliotecaUsuario
+    MenuController
+
+
+Model:
+    Usuario
+    Jogo
+        JogoBiblioteca
+        JogoLoja
+
+Enum: para controlar as mensagens de erro apresentadas ao usuário e facilitar entendimento do código
+    StatusDb
+    StatusLogin
+    StatusUsuario
+    StatusLoja
