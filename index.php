@@ -7,10 +7,6 @@ use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Controller\MenuController;
 use Bcca2\Steam\Controller\BibliotecaLoja;
 
-/* ONDE PAREI
-Precisa fazer com que o metodo PreencherObj da classe bibliotecaLoja rode novamente apos de adicionar um jogo novo ao csv
-como esta agora so roda na inicializacao da classe (pq esta no construtor) */
-
 $bancoUsuarios = new LoginController;
 $menu = new MenuController;
 $bibliotecaLoja = new BibliotecaLoja;
