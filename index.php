@@ -55,7 +55,7 @@ while (true) {
                 $menu->ControlarFluxoBiblioteca($bancoUsuarios->GetCurrentUser()->GetUserBiblioteca());
                 break;
             case 2:
-                $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $bancoUsuarios->GetCurrentUser());
+                $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $usuarioController);
                 break;
             case 3:
                 $menu->ControlarFluxoUsuario($usuarioController);
