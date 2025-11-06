@@ -75,6 +75,9 @@ class LoginController extends LeEscreveCsv
 
             if ($this->UpdateCsv($novoUsuario)) {
                 $this->statusLogin = StatusLogin::CREATED;
+
+                $this->listaUsuarios = array();
+                $this->PreencherObj();
                 return true;
             } else {
                 $this->statusLogin = StatusLogin::FAIL;
