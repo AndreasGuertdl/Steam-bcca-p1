@@ -6,7 +6,6 @@ use Bcca2\Steam\Enum\StatusDb;
 
 abstract class LeEscreveCsv
 {
-    protected StatusDb $statusDb;
     protected string $path;
 
     //criarCsv()
@@ -48,7 +47,7 @@ abstract class LeEscreveCsv
         return $csvArray;
     }
 
-    protected function getCsvRowById(string $id, ?string $path = null) : array|false
+    protected function getCsvRowById(string $id, ?string $path = null) : array
     {
         $desiredElement = false;
 

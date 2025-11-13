@@ -4,11 +4,9 @@ namespace Bcca2\Steam\Controller;
 
 use Bcca2\Steam\Model\Usuario;
 use Bcca2\Steam\Controller\LeEscreveCsv;
-use Bcca2\Steam\Enum\StatusUsuario;
 
 class UsuarioController extends LeEscreveCsv
 {
-    private StatusUsuario $statusUsuario;
     private Usuario $currentUser;
 
     public function __construct(Usuario $currentUser)
@@ -38,14 +36,6 @@ class UsuarioController extends LeEscreveCsv
         fclose($handle);
     }
 
-    public function SetAsWaiting(): void
-    {
-        $this->statusUsuario = StatusUsuario::WAITING;
-    }
-    public function getStatusUsuario(): StatusUsuario
-    {
-        return $this->statusUsuario;
-    }
     public function GetCurrentUser(): Usuario
     {
         return $this->currentUser;
@@ -63,7 +53,7 @@ class UsuarioController extends LeEscreveCsv
     public function MudarProfileName(string $id, string $novoProfileName): void
     {
         if ($novoProfileName == null || strlen($novoProfileName) < 3 || strlen($novoProfileName) > 12) {
-            $this->statusUsuario = StatusUsuario::INVALIDSTRING;
+            echo "\n!!!Informacoes invalidas para atualizar seu Profile Name!!!\n";
         } else {
             $handleRead = fopen($this->path, "r");
             $newUserCsv = array();
@@ -92,20 +82,24 @@ class UsuarioController extends LeEscreveCsv
                 fputcsv($handleWrite, array_values($user));
             }
 
-            $this->statusUsuario = StatusUsuario::PROFILEATUALIZADO;
+            echo "\n!!!Profile atualizado com sucesso!!!\n";
+
+            $this->currentUser->SetProfileName($novoProfileName);
 
             fclose($handleWrite);
         }
     }
 
-    public function AumentarSaldo(string $id, float $valor)
+    public function AtualizarSaldo(string $id, float $valor): bool
     {
-        if (gettype($valor) != "double" && $valor > 0) {
-            $this->statusUsuario = StatusUsuario::INVALIDVALUE;
+        if (!is_float($valor)) {
+            echo "\n!!!Nao foi possivel atualizar seu Saldo\nValor passado invalido!!!\n";
+            return false;
         } else {
             $path = $this->path;
             $handleRead = fopen($path, "r");
             $newUserCsv = array();
+            $novoSaldo = 0;
 
             //Precisa estar aqui para pular a primeira linha (header)
             fgetcsv($handleRead);
@@ -114,7 +108,9 @@ class UsuarioController extends LeEscreveCsv
                 $infoUsuario = array("id" => $user[0], "profile_name" => $user[1], "saldo" => $user[2]);
 
                 if ($infoUsuario["id"] == $id) {
-                    $infoUsuario["saldo"] += $valor;
+                    $novoSaldo = $infoUsuario["saldo"] += $valor;
+
+                    $infoUsuario["saldo"] = $novoSaldo;
                 }
 
                 $newUserCsv[] = $infoUsuario;
@@ -131,44 +127,13 @@ class UsuarioController extends LeEscreveCsv
                 fputcsv($handleWrite, array_values($user));
             }
 
-            $this->statusUsuario = StatusUsuario::SALDOATUALIZADO;
+            echo "\n!!!Saldo atualizado com sucesso!!!\n";
+
+            $this->currentUser->SetSaldo($novoSaldo);
 
             fclose($handleWrite);
+
+            return true;
         }
-    }
-
-    public function debitarSaldo(string $id, float $valor)
-    {
-        $path = $this->path;
-        $handleRead = fopen($path, "r");
-        $newUserCsv = array();
-
-        //Precisa estar aqui para pular a primeira linha (header)
-        fgetcsv($handleRead);
-
-        while (($user = fgetcsv($handleRead)) !== false) {
-            $infoUsuario = array("id" => $user[0], "profile_name" => $user[1], "saldo" => $user[2]);
-
-            if ($infoUsuario["id"] == $id) {
-                $infoUsuario["saldo"] += $valor;
-            }
-
-            $newUserCsv[] = $infoUsuario;
-        }
-
-        fclose($handleRead);
-
-        $handleWrite = fopen($path, "w");
-
-        $header = ['id', 'profile_name', 'saldo', 'id_biblioteca', 'id_lista_amigos', 'id_lista_cartas'];
-        fputcsv($handleWrite, array_values($header));
-
-        foreach ($newUserCsv as $user) {
-            fputcsv($handleWrite, array_values($user));
-        }
-
-        $this->statusUsuario = StatusUsuario::SALDOATUALIZADO;
-
-        fclose($handleWrite);
     }
 }

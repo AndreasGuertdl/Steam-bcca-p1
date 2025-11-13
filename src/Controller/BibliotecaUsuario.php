@@ -66,7 +66,7 @@ class BibliotecaUsuario extends Biblioteca
                     $jogoBiblioteca = new JogoBiblioteca($infoJogoBiblioteca["id_biblioteca"], $infoJogoBiblioteca["nome"], $infoJogoBiblioteca["descricao"], $infoJogoBiblioteca["data_de_lancamento"], $infoJogoBiblioteca["desenvolvedora"], $infoJogoBiblioteca["distribuidora"], $infoJogoBiblioteca["genero"], $infoJogoBiblioteca["conquistas"], $infoJogoBiblioteca["id_usuario"], $infoJogoBiblioteca["horas_jogadas"], $infoJogoBiblioteca["conquistas_feitas"]);
 
                     array_push($this->jogos, $jogoBiblioteca);
-
+                    echo "\n!!!Jogo: ", $jogoBiblioteca->getNome(), " foi adicionado a sua biblioteca!!!\n";
                     return true;
                 } else {
                     echo "\n!!!Saldo insuficiente para comprar este jogo.!!!\n";

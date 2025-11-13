@@ -13,7 +13,7 @@ abstract class Biblioteca extends LeEscreveCsv
     public function GetJogos(): array
     {
         if ($this->jogos == null) {
-            $this->statusDb = StatusDb::INEXISTENT;
+            echo "\n!!!Nenhum jogo comprado.!!!\n";
         }
         return $this->jogos;
     }

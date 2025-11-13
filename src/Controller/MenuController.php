@@ -34,9 +34,10 @@ class MenuController
         echo "\n1- Jogos da Loja.\n2- Comprar Jogo.\n3- Voltar.";
     }
 
-    public function PrintarJogos(array $jogos): void {
-        foreach($jogos as $jogo){
-            echo $jogo ."\n";
+    public function PrintarJogos(array $jogos): void
+    {
+        foreach ($jogos as $jogo) {
+            echo $jogo . "\n";
         }
     }
 
@@ -79,8 +80,6 @@ class MenuController
         do {
             $idCurrentUser = $usuarioController->GetCurrentUser()->GetUserId();
 
-            $usuarioController->SetAsWaiting();
-
             $this->printarMenuUsuario();
             echo $usuarioController->GetCurrentUser()->__toString() . "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
@@ -89,7 +88,13 @@ class MenuController
                 case 1:
                     echo "\nDigite a quantidade de saldo que gostaria de adicionar: ";
                     $saldo = (float) readline();
-                    $usuarioController->AumentarSaldo($idCurrentUser, $saldo);
+
+                    if ($saldo <= 0) {
+                        echo "\n!!!Nao foi possivel atualizar seu Saldo\nValor passado invalido!!!\n";
+                        break;
+                    }
+
+                    $usuarioController->AtualizarSaldo($idCurrentUser, $saldo);
                     break;
                 case 2:
                     echo "\nDigite seu novo Profile Name: ";
@@ -97,7 +102,6 @@ class MenuController
                     $usuarioController->MudarProfileName($idCurrentUser, $novoProfileName);
                     break;
             }
-            echo $usuarioController->getStatusUsuario()->GetUserInformation();
         } while ($this->opcaoMenu != 3);
     }
 
@@ -133,14 +137,13 @@ class MenuController
 
                     $jogoEscolhido = $bibliotecaLoja->GetJogoById($idEscolhido);
 
-                    if($jogoEscolhido != false){
-                        if($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())){
-                            $usuarioController->debitarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
+                    if ($jogoEscolhido != false) {
+                        if ($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())) {
+                            $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
                         }
                     }
                     break;
             }
-            echo $bibliotecaLoja->statusLoja->GetLojaInformation();
         } while ($this->opcaoMenu != 3);
     }
 }

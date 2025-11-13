@@ -20,6 +20,7 @@ $bibliotecaLoja->adicionarJogoCsv($hollowKnight); */
 while (true) {
     $opcaoTelaLogin = 0;
     $opcaoTelaMenuPrincipal = 0;
+    $loginStatus = false;
 
     //Loop para login
     do {
@@ -33,20 +34,19 @@ while (true) {
                 break;
             case 2:
                 $informacoesUsuario = $menu->coletarInfoParaLogin();
-                $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                 break;
             case 3:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
                 exit();
         }
-        echo $bancoUsuarios->statusLogin->GetLoginInformation();
 
-    } while (!$bancoUsuarios->statusLogin->GetStatusLoging());
+    } while (!$loginStatus);
 
     $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
 
     //Loop para continuar na conta
-    while ($bancoUsuarios->statusLogin->GetStatusLoging()) {
+    while ($loginStatus) {
         $menu->PrintarMenuPrincipal();
         $opcaoTelaMenuPrincipal = (int)readline();
 
@@ -61,7 +61,7 @@ while (true) {
                 $menu->ControlarFluxoUsuario($usuarioController);
                 break;
             case 4:
-                $bancoUsuarios->setAsDeslogado();
+                $loginStatus = false;
                 break;
             case 5:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
