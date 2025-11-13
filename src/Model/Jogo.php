@@ -1,28 +1,26 @@
 <?php
 
-namespace Bcca2\Steam;
+namespace Bcca2\Steam\Model;
 
 abstract class Jogo {
-    static $idGeral = 0;
-    private $id;
-    protected $nome;
-    protected $descricao;
-    protected $data_de_lancamento;
-    protected $desenvolvedora;
-    protected $distribuidora;
-    protected $genero;
+    private string $id;
+    protected string $nome;
+    protected string $descricao;
+    protected string $data_de_lancamento;
+    protected string $desenvolvedora;
+    protected string $distribuidora;
+    protected string $genero;
     protected $conquistas;
 
-    public function __construct($nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas){
+    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas){
+        $this->id = $id;
         $this->nome = $nome;
         $this->descricao = $descricao;
         $this->data_de_lancamento = $data_de_lancamento;
         $this->desenvolvedora = $desenvolvedora;
         $this->distribuidora = $distribuidora;
         $this->genero = $genero;
-        $this->conquistas = $conquistas;
-        self::$idGeral++;
-        $this->id = self::$idGeral;        
+        $this->conquistas = $conquistas;      
     }
     public function getId(){
         return $this->id;
@@ -47,9 +45,5 @@ abstract class Jogo {
     }
     public function getConquistas(){
         return $this->conquistas;
-    }
-    public function __toString()
-    {
-        return "\n|$this->id - $this->nome          LANCAMENTO: $this->data_de_lancamento\nDESCRICAO: $this->descricao\nGENERO: $this->genero.\n";
     }
 }

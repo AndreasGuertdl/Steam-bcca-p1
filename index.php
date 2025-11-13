@@ -2,66 +2,70 @@
 
 require_once 'vendor/autoload.php';
 
-use Bcca2\Steam\BancoUsuarios;
-use Bcca2\Steam\Menu;
-use Bcca2\Steam\BibliotecaLoja;
-use Bcca2\Steam\JogoLoja;
+use Bcca2\Steam\Controller\LoginController;
+use Bcca2\Steam\Controller\UsuarioController;
+use Bcca2\Steam\Controller\MenuController;
+use Bcca2\Steam\Controller\BibliotecaLoja;
 
-$bancoUsuarios = new BancoUsuarios;
+$bancoUsuarios = new LoginController;
+$menu = new MenuController;
 $bibliotecaLoja = new BibliotecaLoja;
-$menu = new Menu;
-$statusLogin = false;
-$opcaoTelaLogin = 0;
-$opcaoTelaMenuPrincipal = 0;
 
+/* $dragonsDogma = [1, "Dragon's Dogma", "Talvez o melhor jogo ja criado.", "2010", "Capcom", "Jesus Cristo", "Action-RPG", "42", 60, 100, 1];
+$hollowKnight = [2, "Hollow Knight", "O pior jogo ja feito.", "1800", "Team Ladybug", "Team Ladybug", "Walking Simulator", "26", 1, 1, 1000];
+$bibliotecaLoja->adicionarJogoCsv($dragonsDogma);
+$bibliotecaLoja->adicionarJogoCsv($hollowKnight); */
 
-$dragonsDogma = new JogoLoja("Dragon's Dogma", "Talvez o melhor jogo ja criado.", "2010", "Capcom", "Jesus Cristo", "Action-RPG", "42", 60);
-$hollowKnight = new JogoLoja("Hollow Knight", "O pior jogo ja feito.", "1800", "Team Ladybug", "Team Ladybug", "Walking Simulator", "26", 1);
-$bibliotecaLoja->adicionarJogo($dragonsDogma);
-$bibliotecaLoja->adicionarJogo($hollowKnight);
+//Loop para rodar a aplicacao
+while (true) {
+    $opcaoTelaLogin = 0;
+    $opcaoTelaMenuPrincipal = 0;
+    $loginStatus = false;
 
-while($opcaoTelaLogin != 3 && $opcaoTelaMenuPrincipal != 5){
     //Loop para login
-    do{
+    do {
         $menu->PrintarMenuInicial();
         $opcaoTelaLogin = (int)readline();
-        switch($opcaoTelaLogin){
+
+        switch ($opcaoTelaLogin) {
             case 1:
-                $bancoUsuarios->RegistrarUsuarios();
+                $informacoesUsuario = $menu->ColetarInfoNovoUsario();
+                $bancoUsuarios->RegistrarUsuario($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                 break;
             case 2:
-                $statusLogin = $bancoUsuarios->Logar();
+                $informacoesUsuario = $menu->coletarInfoParaLogin();
+                $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                 break;
             case 3:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
-                break;
+                exit();
         }
-    }while($opcaoTelaLogin != 3 && $statusLogin == false);
+
+    } while (!$loginStatus);
+
+    $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
 
     //Loop para continuar na conta
-    if($statusLogin){
-        do{
-            $menu->PrintarMenuPrincipal();
-            $opcaoTelaMenuPrincipal = (int)readline();
+    while ($loginStatus) {
+        $menu->PrintarMenuPrincipal();
+        $opcaoTelaMenuPrincipal = (int)readline();
 
-            switch($opcaoTelaMenuPrincipal){
-                case 1:
-                    $menu->ControlarFluxoBiblioteca($bancoUsuarios->GetCurrentUser()->GetUserBiblioteca());
-                    break;
-                case 2:
-                    $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $bancoUsuarios->GetCurrentUser());
-                    break;
-                case 3:
-                    $menu->ControlarFluxoUsuario($bancoUsuarios->GetCurrentUser());
-                    break;
-                case 4:
-                    $statusLogin = false;
-                    break;
-                case 5:
-                    echo "\nAdeus meu camarada tenha um bom dia.\n";
-                    break;
-            }  
-        }while($opcaoTelaMenuPrincipal != 5 && $opcaoTelaMenuPrincipal != 4);
+        switch ($opcaoTelaMenuPrincipal) {
+            case 1:
+                $menu->ControlarFluxoBiblioteca($bancoUsuarios->GetCurrentUser()->GetUserBiblioteca());
+                break;
+            case 2:
+                $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $usuarioController);
+                break;
+            case 3:
+                $menu->ControlarFluxoUsuario($usuarioController);
+                break;
+            case 4:
+                $loginStatus = false;
+                break;
+            case 5:
+                echo "\nAdeus meu camarada tenha um bom dia.\n";
+                exit();
+        }
     }
 }
-?>
