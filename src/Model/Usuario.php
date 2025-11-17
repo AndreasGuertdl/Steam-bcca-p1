@@ -66,6 +66,15 @@ class Usuario
         $this->lista_amigos[] = $amigoInfo;
     }
 
+    public function isInFriendList(string $amigo_nome): bool {
+        foreach($this->lista_amigos as $amigo){
+            if($amigo["friend_name"] == $amigo_nome){
+                return true;
+            }
+        }
+        
+        return false;
+    }
     public function __toString()
     {
         return "\n|USUARIO: $this->profile_name          SALDO: $this->saldo R$|";
