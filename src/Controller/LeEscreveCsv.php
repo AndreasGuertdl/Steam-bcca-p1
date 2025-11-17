@@ -14,9 +14,13 @@ abstract class LeEscreveCsv
     abstract protected function PreencherObj(): void;
 
     //Adiciona uma nova row na ultima linha do CSV
-    protected function UpdateCsv(array $data): bool
+    protected function UpdateCsv(array $data, ?string $path = null): bool
     {
-        $handleWrite = fopen($this->path, "a");
+        if ($path == null) {
+            $handleWrite = fopen($this->path, "a");
+        } else {
+            $handleWrite = fopen($path, "a"); 
+        }
 
         $status = fputcsv($handleWrite, array_values($data));
 
@@ -49,8 +53,6 @@ abstract class LeEscreveCsv
 
     protected function getCsvRowById(string $id, ?string $path = null) : array
     {
-        $desiredElement = false;
-
         if ($path != null) {
             $handleRead = fopen($path, "r");
         } else {
@@ -71,12 +73,34 @@ abstract class LeEscreveCsv
         return $desiredElement;
     }
 
-    protected function IsInCsv(string $info, ?string $path = null): bool
+    protected function getCsvRowByName(string $name, ?string $path = null) : array
     {
         if ($path != null) {
             $handleRead = fopen($path, "r");
         } else {
             $handleRead = fopen($this->path, "r");
+        }
+
+        while (($row = fgetcsv($handleRead)) !== false) {
+            $idCsv = $row[1];
+
+            if($name == $idCsv){
+                $desiredElement = $row;
+                break;
+            }
+        }
+
+        fclose($handleRead);
+
+        return $desiredElement;
+    }
+
+    protected function IsInCsv(string $info, ?string $path = null): bool
+    {
+        if ($path == null) {
+            $handleRead = fopen($this->path, "r");
+        } else {
+            $handleRead = fopen($path, "r");
         }
 
         while (($row = fgetcsv($handleRead)) !== false) {

@@ -12,7 +12,7 @@ class Usuario
     private string $profile_name;
     protected float $saldo = 0;
     private BibliotecaUsuario $biblioteca;
-    //private Amigos $lista_amigos;
+    private array $lista_amigos = [];
     //private Cartas $lista_cartas;
 
     function __construct(string $id, string $username, string $senha)
@@ -28,7 +28,8 @@ class Usuario
     {
         $this->profile_name = $profile_name;
     }
-    public function SetSaldo(float $valor): void {
+    public function SetSaldo(float $valor): void
+    {
         $this->saldo = $valor;
     }
     public function GetUserId(): string
@@ -55,9 +56,22 @@ class Usuario
     {
         return $this->biblioteca;
     }
+    public function GetUserFriendList(): array
+    {
+        return $this->lista_amigos;
+    }
+
+    public function AdicionarAmigo(array $amigoInfo): void
+    {
+        $this->lista_amigos[] = $amigoInfo;
+    }
 
     public function __toString()
     {
         return "\n|USUARIO: $this->profile_name          SALDO: $this->saldo R$|";
+    }
+    public function toStringAmigo()
+    {
+        echo "|\n| USERNAME: ", $this->profile_name, "\n";
     }
 }
