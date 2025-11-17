@@ -136,7 +136,6 @@ class MenuController
                     $usuarioController->AdicionarAmigoByName($username);
                     break;
                 case 4:
-                    $usuarioController->PreencherFriendList();
                     echo "\nLista de Amigos:\n";
                     $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
                     break;

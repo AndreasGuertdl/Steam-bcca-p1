@@ -18,6 +18,8 @@ class UsuarioController extends LeEscreveCsv
         $this->AdicionarNovoUserAoCsv();
 
         $this->PreencherObj();
+
+        $this->PreencherFriendList();
     }
 
     protected function PreencherObj(): void
@@ -92,12 +94,13 @@ class UsuarioController extends LeEscreveCsv
 
         echo "\n!!!Usuario encontrado!!!\n";
 
-        $friendInfo = ["id_usuario" => $this->currentUser->GetUserId(), "id_amigo" => $friend[0], "amigo_name" => $friend[1]];
+        $friendInfo = ["id_usuario" => $this->currentUser->GetUserId(), "id_amigo" => $friend[0], "friend_name" => $friend[1]];
 
-        echo "\n!!!Adicionando ", $friendInfo["amigo_name"], " como amigo...\n";
+        echo "\n!!!Adicionando ", $friendInfo["friend_name"], " como amigo...\n";
 
         if($this->UpdateCsv($friendInfo, $path)){
             echo "\n!!!Amigo adicionado com sucesso!!!\n";
+            $this->currentUser->AdicionarAmigo($friendInfo);         
         }else{
             echo "\n!!!Erro ao adicionar este usuario!!!\n";
         }
