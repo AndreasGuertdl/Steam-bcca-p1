@@ -42,6 +42,9 @@ class MenuController
     }
 
     public function PrintarListaAmigos(array $amigos): void {
+        if(count($amigos) == 0){
+            echo "\n!!!Nenhum amigo adicionado!!!\n";
+        }
         foreach($amigos as $amigo){
             echo "\n| ", $amigo["friend_name"], "\n" ;
         }
@@ -138,7 +141,7 @@ class MenuController
                     $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
                     break;
             }
-        } while ($this->opcaoMenu != 3);
+        } while ($this->opcaoMenu != 5);
     }
 
     public function ControlarFluxoBiblioteca(BibliotecaUsuario $bibliotecaUsuario)
