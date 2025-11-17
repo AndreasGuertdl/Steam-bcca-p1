@@ -83,7 +83,7 @@ class UsuarioController extends LeEscreveCsv
 
         $path = dirname(__DIR__) . '\components\usersFriends.csv'; 
 
-        if($this->IsInCsv($friendName)){
+        if($this->currentUser->isInFriendList($friendName)){
             echo "\n!!!Amigo ja adicionado a sua lista de amigos!!!\n";
             return;
         }
