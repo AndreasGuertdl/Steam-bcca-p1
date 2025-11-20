@@ -19,7 +19,7 @@ abstract class LeEscreveCsv
         if ($path == null) {
             $handleWrite = fopen($this->path, "a");
         } else {
-            $handleWrite = fopen($path, "a"); 
+            $handleWrite = fopen($path, "a");
         }
 
         $status = fputcsv($handleWrite, array_values($data));
@@ -51,7 +51,7 @@ abstract class LeEscreveCsv
         return $csvArray;
     }
 
-    protected function getCsvRowById(string $id, ?string $path = null) : array
+    protected function getCsvRowById(string $id, ?string $path = null): array
     {
         if ($path != null) {
             $handleRead = fopen($path, "r");
@@ -62,7 +62,7 @@ abstract class LeEscreveCsv
         while (($row = fgetcsv($handleRead)) !== false) {
             $idCsv = $row[0];
 
-            if($id == $idCsv){
+            if ($id == $idCsv) {
                 $desiredElement = $row;
                 break;
             }
@@ -73,7 +73,7 @@ abstract class LeEscreveCsv
         return $desiredElement;
     }
 
-    protected function getCsvRowByName(string $name, ?string $path = null) : array
+    protected function getCsvRowByName(string $name, ?string $path = null): array
     {
         if ($path != null) {
             $handleRead = fopen($path, "r");
@@ -84,7 +84,7 @@ abstract class LeEscreveCsv
         while (($row = fgetcsv($handleRead)) !== false) {
             $idCsv = $row[1];
 
-            if($name == $idCsv){
+            if ($name == $idCsv) {
                 $desiredElement = $row;
                 break;
             }
