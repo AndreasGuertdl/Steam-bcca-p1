@@ -60,19 +60,28 @@ class Usuario
     {
         return $this->lista_amigos;
     }
+    public function UpdateUserFriendList():void{
+        $this->lista_amigos = [];
+    }
 
     public function AdicionarAmigo(array $amigoInfo): void
     {
         $this->lista_amigos[] = $amigoInfo;
     }
 
-    public function isInFriendList(string $amigo_nome): bool {
-        foreach($this->lista_amigos as $amigo){
-            if($amigo["friend_name"] == $amigo_nome){
+    public function RemoverAmigo(array $updatedCsv): void {
+
+
+    }
+
+    public function isInFriendList(string $amigo_nome): bool
+    {
+        foreach ($this->lista_amigos as $amigo) {
+            if ($amigo["friend_name"] == $amigo_nome) {
                 return true;
             }
         }
-        
+
         return false;
     }
     public function __toString()
