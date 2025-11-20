@@ -13,7 +13,8 @@ class Usuario
     protected float $saldo = 0;
     private BibliotecaUsuario $biblioteca;
     private array $lista_amigos = [];
-    //private Cartas $lista_cartas;
+
+    private array $lista_cartas = [];
 
     function __construct(string $id, string $username, string $senha)
     {
@@ -60,30 +61,30 @@ class Usuario
     {
         return $this->lista_amigos;
     }
-    public function UpdateUserFriendList():void{
-        $this->lista_amigos = [];
-    }
 
     public function AdicionarAmigo(array $amigoInfo): void
     {
         $this->lista_amigos[] = $amigoInfo;
     }
 
-    public function RemoverAmigo(array $updatedCsv): void {
-
-
-    }
-
-    public function isInFriendList(string $amigo_nome): bool
-    {
-        foreach ($this->lista_amigos as $amigo) {
-            if ($amigo["friend_name"] == $amigo_nome) {
+    public function isInFriendList(string $amigo_nome): bool {
+        foreach($this->lista_amigos as $amigo){
+            if($amigo["friend_name"] == $amigo_nome){
                 return true;
             }
         }
-
+        
         return false;
     }
+
+    public function getCartas(){
+        return $this->lista_cartas;
+    }
+
+    public function setCartas($cartas){
+        $this->lista_cartas = $cartas;
+    }
+
     public function __toString()
     {
         return "\n|USUARIO: $this->profile_name          SALDO: $this->saldo R$|";
