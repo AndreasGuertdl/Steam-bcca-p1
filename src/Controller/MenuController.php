@@ -11,7 +11,7 @@ class MenuController
 
     public function PrintarMenuInicial(): void
     {
-        echo "\n===STEAM OFFLINE===\n\nSeja Bem vindo!\n1- Registar.\n2- Logar.\n3- Sair.\nSelecione uma das opcoes acima: ";
+        echo "\n<===STEAM OFFLINE===>\n\nSeja Bem vindo!\n1- Registar.\n2- Logar.\n3- Sair.\nSelecione uma das opcoes acima: ";
     }
 
     public function PrintarMenuPrincipal(): void
@@ -21,7 +21,7 @@ class MenuController
 
     public function PrintarMenuUsuario(): void
     {
-        echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Voltar.";
+        echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Adicionar Amigo.\n4- Lista de Amigos.\n5- Remover Amigo.\n6- Voltar.";
     }
 
     public function PrintrarMenuBiblioteca(): void
@@ -40,6 +40,34 @@ class MenuController
             echo $jogo . "\n";
         }
     }
+
+    public function PrintarListaAmigos(array $amigos): void {
+        if(count($amigos) == 0){
+            echo "\n!!!Nenhum amigo adicionado!!!\n";
+        }
+        foreach($amigos as $amigo){
+            echo "\n| ", $amigo["friend_name"], "\n" ;
+        }
+    }
+
+    public function PrintarUsuarios(string $idCurrentUser): void
+    {
+        $pathCsvUsuarios = dirname(__DIR__) . '\components\usersData.csv';
+        $handle = fopen($pathCsvUsuarios, "r");
+
+        //Precisa estar aqui para pular a primeira linha (header)
+        fgetcsv($handle);
+
+        while (($user = fgetcsv($handle)) !== false) {
+            if ($idCurrentUser == $user[0]) {
+                continue;
+            } else {
+                echo "|\n| USERNAME: ", $user[1], "\n";
+            }
+        }
+
+        fclose($handle);
+    }  
 
     public function ColetarInfoNovoUsario(): array
     {
@@ -64,7 +92,7 @@ class MenuController
         $loginUsuario = null;
         $loginSenha = null;
 
-        echo "\nLOGIN DE USUARIO\nUSUARIO:";
+        echo "\nLOGIN DE USUARIO\nUSUARIO: ";
         $loginUsuario = readline();
         $infoUsuario["username"] = $loginUsuario;
 
@@ -101,8 +129,29 @@ class MenuController
                     $novoProfileName = readline();
                     $usuarioController->MudarProfileName($idCurrentUser, $novoProfileName);
                     break;
+                case 3:
+                    $this->PrintarUsuarios($idCurrentUser);
+                    echo "\nDigite o USERNAME do Usuario que deseja adicionar como amigo: ";
+                    $username = readline();
+                    $usuarioController->AdicionarAmigoByName($username);
+                    break;
+                case 4:
+                    echo "\nLista de Amigos:\n";
+                    $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
+                    break;
+                case 5:
+                    echo "\nLista de Amigos:\n";
+                    $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
+                    if(count($usuarioController->GetCurrentUser()->GetUserFriendList()) == 0){
+                        echo "\nVocê ainda não tem amigos :(\n";
+                        break;
+                    }
+                    echo "\nDigite o USERNAME do Usuario que deseja remover como amigo: ";
+                    $username = readline();
+                    $usuarioController->DeletarAmigoByName($username);
+                    break;
             }
-        } while ($this->opcaoMenu != 3);
+        } while ($this->opcaoMenu != 6);
     }
 
     public function ControlarFluxoBiblioteca(BibliotecaUsuario $bibliotecaUsuario)
