@@ -53,7 +53,7 @@ class UsuarioController extends LeEscreveCsv
 
     public function PreencherFriendList()
     {
-        if($this->IsListaAtualizada($this->currentUser->GetUserFriendList())){
+        if ($this->IsListaAtualizada($this->currentUser->GetUserFriendList())) {
             return;
         }
 
@@ -78,14 +78,14 @@ class UsuarioController extends LeEscreveCsv
             return;
         }
 
-        if($friendName == $this->currentUser->GetUsername()){
+        if ($friendName == $this->currentUser->GetUsername()) {
             echo "\n!!!Nao e possivel adicionar a si mesmo como amigo!!!\n";
             return;
         }
 
-        $path = dirname(__DIR__) . '\components\usersFriends.csv'; 
+        $path = dirname(__DIR__) . '\components\usersFriends.csv';
 
-        if($this->currentUser->isInFriendList($friendName)){
+        if ($this->currentUser->isInFriendList($friendName)) {
             echo "\n!!!Amigo ja adicionado a sua lista de amigos!!!\n";
             return;
         }
@@ -98,12 +98,61 @@ class UsuarioController extends LeEscreveCsv
 
         echo "\n!!!Adicionando ", $friendInfo["friend_name"], " como amigo...\n";
 
-        if($this->UpdateCsv($friendInfo, $path)){
+        if ($this->UpdateCsv($friendInfo, $path)) {
             echo "\n!!!Amigo adicionado com sucesso!!!\n";
-            $this->currentUser->AdicionarAmigo($friendInfo);         
-        }else{
+            $this->currentUser->AdicionarAmigo($friendInfo);
+        } else {
             echo "\n!!!Erro ao adicionar este usuario!!!\n";
         }
+    }
+
+    public function DeletarAmigoByName(string $friendName): void
+    {
+        if (!$this->IsInCsv($friendName)) {
+            echo "\n!!!Usuario nao encontrado!!!\n";
+            return;
+        }
+
+        if ($friendName == $this->currentUser->GetUsername()) {
+            echo "\n!!!Nao e possivel desfazer amizade com si mesmo!!!\n";
+            return;
+        }
+
+        $path = dirname(__DIR__) . '\components\usersFriends.csv';
+
+        if (!$this->currentUser->isInFriendList($friendName)) {
+            echo "\n!!!Este usuário já não é mais seu amigo.....\n";
+            return;
+        }
+
+        $handleRead = fopen($path, "r");
+        //Precisa estar aqui para pular a primeira linha (header)
+        fgetcsv($handleRead);
+        $updatedCsv = array();
+
+        while (($user = fgetcsv($handleRead)) !== false) {
+            if ($user[2] != $friendName) {
+                $infoAmigo = array($user[0], $user[1], $user[2]);
+                array_push($updatedCsv, $infoAmigo);
+            }
+        }
+
+        fclose($handleRead);
+
+        $handleWrite = fopen($path, "w");
+
+        $header = ["id_usuario", "id_amigo", "amigo_name"];
+        fputcsv($handleWrite, array_values($header));
+
+        foreach ($updatedCsv as $user) {
+            fputcsv($handleWrite, array_values($user));
+        }
+
+        $this->currentUser->UpdateUserFriendList();
+
+        $this->PreencherFriendList();
+
+        echo "\n!!!Removendo ", $friendName, " como amigo...\n";
     }
 
     public function MudarProfileName(string $id, string $novoProfileName): void

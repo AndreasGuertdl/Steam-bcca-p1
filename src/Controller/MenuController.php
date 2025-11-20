@@ -21,7 +21,7 @@ class MenuController
 
     public function PrintarMenuUsuario(): void
     {
-        echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Adicionar Amigo.\n4- Lista de Amigos.\n5- Voltar.";
+        echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Adicionar Amigo.\n4- Lista de Amigos.\n5- Remover Amigo.\n6- Voltar.";
     }
 
     public function PrintrarMenuBiblioteca(): void
@@ -139,8 +139,19 @@ class MenuController
                     echo "\nLista de Amigos:\n";
                     $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
                     break;
+                case 5:
+                    echo "\nLista de Amigos:\n";
+                    $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
+                    if(count($usuarioController->GetCurrentUser()->GetUserFriendList()) == 0){
+                        echo "\nVocê ainda não tem amigos :(\n";
+                        break;
+                    }
+                    echo "\nDigite o USERNAME do Usuario que deseja remover como amigo: ";
+                    $username = readline();
+                    $usuarioController->DeletarAmigoByName($username);
+                    break;
             }
-        } while ($this->opcaoMenu != 5);
+        } while ($this->opcaoMenu != 6);
     }
 
     public function ControlarFluxoBiblioteca(BibliotecaUsuario $bibliotecaUsuario)
