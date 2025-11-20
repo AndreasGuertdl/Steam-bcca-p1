@@ -29,12 +29,30 @@ while (true) {
 
         switch ($opcaoTelaLogin) {
             case 1:
-                $informacoesUsuario = $menu->ColetarInfoNovoUsario();
-                $bancoUsuarios->RegistrarUsuario($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                echo "\n1- Registro de Usuario \n2- Registro de Desenvolvedor\nSelecione uma das opcoes acima: ";
+                $tipoRegistro = (int)readline();
+                if ($tipoRegistro === 1) {
+                    $informacoesUsuario = $menu->ColetarInfoNovoUsario();
+                    $bancoUsuarios->RegistrarUsuario($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                } elseif ($tipoRegistro === 2) {
+                    $informacoesUsuario = $menu->ColetarInfoNovoDev();
+                    $bancoUsuarios->RegistrarDev($informacoesUsuario["username"], $informacoesUsuario["publisher_name"], $informacoesUsuario["senha"]);
+                } else {
+                    echo "\nOpção inválida. Por favor, tente novamente.\n";
+                }
                 break;
             case 2:
-                $informacoesUsuario = $menu->coletarInfoParaLogin();
-                $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                echo "\n1- Login de Usuario \n2- Login de Desenvolvedor\nSelecione uma das opcoes acima: ";
+                $tipoLogin = (int)readline();
+                if ($tipoLogin === 1) {
+                    $informacoesUsuario = $menu->coletarInfoParaLogin();
+                    $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                } elseif ($tipoLogin === 2) {
+                    $informacoesUsuario = $menu->coletarInfoParaLoginDev();
+                    $loginStatus = $bancoUsuarios->LogarDev($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                } else {
+                    echo "\nOpção inválida. Por favor, tente novamente.\n";
+                }
                 break;
             case 3:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
