@@ -67,7 +67,7 @@ class BibliotecaLoja extends Biblioteca
         fclose($handleRead);
     }
 
-    public function adicionarNovoJogo(array $infoJogo)
+    public function adicionarNovoJogo(array $infoJogo): void
     {
         if (file_exists($this->path)) {
             $idJogo = ["id" => $infoJogo[0]];
@@ -90,18 +90,17 @@ class BibliotecaLoja extends Biblioteca
         }
     }
 
-    public function GetJogoById(int $id): JogoLoja
-    {
-        $jogoEscolhido = false;
-
+    public function GetJogoById(int $id): ?JogoLoja
+    {   
         foreach ($this->jogos as $jogo) {
             if ($jogo->getId() == $id) {
                 $jogoEscolhido = $jogo;
             }
         }
-        if (!$jogoEscolhido) {
-            echo "\n!!!Nenhum jogo encontrado com as informacoes passadas!!!\n";
-        }
-        return $jogoEscolhido;
+        if(isset($jogoEscolhido)){
+            return $jogoEscolhido;
+        }     
+        echo "\n!!!Nenhum jogo encontrado com as informacoes passadas!!!\n";
+        return NULL;
     }
 }

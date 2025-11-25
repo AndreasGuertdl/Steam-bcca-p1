@@ -25,16 +25,18 @@ $cartaController->adicionarCarta($carta1);
 $carta2 = new Carta("Dragao", 2, 1);
 $cartaController->adicionarCarta($carta2); */
 
+
+
 //Loop para rodar a aplicacao
 while (true) {
     $opcaoTelaLogin = 0;
     $opcaoTelaMenuPrincipal = 0;
     $loginStatusUser = false;
     $loginStatusDev = false;
-
     //Loop para login
+
     do {
-        $menu->PrintarMenuInicial();
+        echo "\n<===STEAM OFFLINE===>\n\nSeja Bem vindo!\n1- Registar.\n2- Logar.\n3- Sair.\nSelecione uma das opcoes acima: ";
         $opcaoTelaLogin = (int)readline();
 
         switch ($opcaoTelaLogin) {
@@ -45,60 +47,40 @@ while (true) {
                     $informacoesUsuario = $menu->ColetarInfoNovoUsario();
                     $bancoUsuarios->RegistrarUsuario($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                 } elseif ($tipoRegistro === 2) {
-                    $informacoesUsuario = $menu->ColetarInfoNovoDev();
-                    $bancoUsuarios->RegistrarDev($informacoesUsuario["username"], $informacoesUsuario["publisher_name"], $informacoesUsuario["senha"]);
+                    $informacoesUsuario = $menu->ColetarInfoNovoUsario();
+                    $bancoUsuarios->RegistrarDev($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                 } else {
                     echo "\nOpção inválida. Por favor, tente novamente.\n";
                 }
                 break;
             case 2:
                 echo "\n1- Login de Usuario \n2- Login de Desenvolvedor\nSelecione uma das opcoes acima: ";
+
                 $tipoLogin = (int)readline();
+
                 if ($tipoLogin === 1) {
                     $informacoesUsuario = $menu->coletarInfoParaLogin();
                     $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                     $loginStatusUser = $loginStatus;
                 } elseif ($tipoLogin === 2) {
-                    $informacoesUsuario = $menu->coletarInfoParaLoginDev();
+                    $informacoesUsuario = $menu->coletarInfoParaLogin();
                     $loginStatus = $bancoUsuarios->LogarDev($informacoesUsuario["username"], $informacoesUsuario["senha"]);
                     $loginStatusDev = $loginStatus;
                 } else {
-                    echo "\nOpção inválida. Por favor, tente novamente.\n";
+                    echo "\n!!!Opção inválida. Por favor, tente novamente.!!!\n";
                 }
                 break;
             case 3:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
                 exit();
         }
-
     } while (!$loginStatusUser && !$loginStatusDev);
 
-    $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
-    $devController = null;
-
-    if ($loginStatusDev) {
-        $devController = new DevController($bancoUsuarios->GetCurrentDev());
-    }
-
-    while ($loginStatusDev) {
-        $menu->PrintarMenuDev();
-        $opcaoTelaMenuDev = (int)readline();
-
-        switch ($opcaoTelaMenuDev) {
-            case 1:
-                $menu->ControlarFluxoDev($devController->GetCurrentUser());
-                break;
-            case 2:
-                $loginStatusDev = false;
-                break;
-            case 3:
-                echo "\nAdeus meu camarada tenha um bom dia.\n";
-                exit();
-        }
-    }
-    //Loop para continuar na conta
+    //Loop para menu Usuario
     while ($loginStatusUser) {
-        $menu->PrintarMenuPrincipal();
+        $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
+
+        echo "\n\n1- Biblioteca.\n2- Loja.\n3- Usuario.\n4- Desloggar.\n5- Sair.\nSelecione uma das opcoes acima: ";
         $opcaoTelaMenuPrincipal = (int)readline();
 
         switch ($opcaoTelaMenuPrincipal) {
@@ -117,6 +99,28 @@ while (true) {
             case 5:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
                 exit();
+        }
+    }
+
+    //Loop para menu Dev
+    while ($loginStatusDev) {
+        $devController = new DevController($bancoUsuarios->GetCurrentDev());
+
+        while ($loginStatusDev) {
+            $menu->ControlarFluxoDev($devController);
+            $opcaoTelaMenuDev = (int)readline();
+
+            switch ($opcaoTelaMenuDev) {
+                case 1:
+                    
+                    break;
+                case 2:
+                    $loginStatusDev = false;
+                    break;
+                case 3:
+                    echo "\nAdeus meu camarada tenha um bom dia.\n";
+                    exit();
+            }
         }
     }
 }

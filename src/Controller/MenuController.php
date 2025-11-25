@@ -95,30 +95,10 @@ class MenuController
         return $infoUsuario;
     }
 
-    public function ColetarInfoNovoDev(): array
+    public function ColetarInfoNovoJogo(UserDev $userDev): array
     {
-        $infoUsuario = array("username" => "", "publisher_name" => "", "senha" => "");
-        $username = null;
-        $senha = null;
-
-        echo "\nDefina o seu username.\nEle deve conter de 3 a 12 caracteres: ";
-        $username = readline();
-        $infoUsuario["username"] = $username;
-
-        echo "\nDefina o nome da publisher.\nEle deve conter de 3 a 12 caracteres: ";
-        $publisher_name = readline();
-        $infoUsuario["publisher_name"] = $publisher_name;
-
-        echo "\nDefina a sua senha.\nEla deve conter de 3 a 12 caracteres: ";
-        $senha = readline();
-        $infoUsuario["senha"] = $senha;
-
-        return $infoUsuario;
-    }
-
-    public function ColetarInfoNovoJogo(UserDev $userDev): array{
         $infoJogo = array("id" => "", "nome" => "", "descricao" => "", "data_lancamento" => "", "desenvolvedora" => "", "distribuidora" => "", "genero" => "", "conquistas" => "", "preco" => "");
-        
+
         echo "\nDefina o ID do jogo: ";
         $infoJogo["id"] = readline();
 
@@ -166,25 +146,9 @@ class MenuController
 
         return $infoUsuario;
     }
-    
-    public function coletarInfoParaLoginDev(): array
+
+    public function printarTodasCartas(array $cartasLoja): void
     {
-        $infoUsuario = array("username" => "", "senha" => "");
-        $loginUsuario = null;
-        $loginSenha = null;
-
-        echo "\nLOGIN DE USUARIO\nUSUARIO: ";
-        $loginUsuario = readline();
-        $infoUsuario["username"] = $loginUsuario;
-
-        echo "\nSENHA: ";
-        $loginSenha = readline();
-        $infoUsuario["senha"] = $loginSenha;
-
-        return $infoUsuario;
-    }
-
-    public function printarTodasCartas(array $cartasLoja): void {
         if (count($cartasLoja) == 0) {
             echo "\n!!!Nenhum amigo adicionado!!!\n";
         }
@@ -198,7 +162,7 @@ class MenuController
         do {
             $idCurrentUser = $usuarioController->GetCurrentUser()->GetUserId();
 
-            $this->printarMenuUsuario();
+            echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Adicionar Amigo.\n4- Lista de Amigos.\n5- Remover Amigo.\n6 - Voltar.";
             echo $usuarioController->GetCurrentUser()->__toString() . "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
 
@@ -229,43 +193,62 @@ class MenuController
                     echo "\nLista de Amigos:\n";
                     $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
                     break;
+                case 5:
+                    echo "\nLista de Amigos:\n";
+                    $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
+                    if (count($usuarioController->GetCurrentUser()->GetUserFriendList()) == 0) {
+                        echo "\nVocê ainda não tem amigos :(\n";
+                        break;
+                    }
+                    echo "\nDigite o USERNAME do Usuario que deseja remover como amigo: ";
+                    $username = readline();
+                    $usuarioController->DeletarAmigoByName($username);
+                    break;
             }
         } while ($this->opcaoMenu != 5);
     }
 
-    public function ControlarFluxoDev(UserDev $userDev): void
+    public function ControlarFluxoDev(DevController $userDevController): void
     {
         do {
-            $idCurrentUser = $userDev->GetUserId();
-            $bibliotecaDev = $userDev->GetBibliotecaDev();
+            //$idCurrentUser = $userDevController->GetCurrentUser()->GetUserId();
+            $currentDev = $userDevController->GetCurrentUser();
+            $bibliotecaDev = $currentDev->GetBibliotecaDev();
 
-            $this->PrintarMenuDev();
-            echo $userDev->__toString() . "\nSelecione uma das opcoes acima: ";
+            echo "\n1- Adicionar Jogo.\n2- Alterar Username.\n3- Lista de Jogos Publicados.\n4- Definir uma publisher.\n5- Desloggar.";
+
+            echo $userDevController->GetCurrentUser()->__toString() . "\nSelecione uma das opcoes acima: ";
+
             $this->opcaoMenu = (int)readline();
 
             switch ($this->opcaoMenu) {
                 case 1:
                     echo "\nDigite as informações do jogo: ";
-                    $infoJogo = $this->ColetarInfoNovoJogo($userDev);
+                    $infoJogo = $this->ColetarInfoNovoJogo($currentDev);
                     $bibliotecaDev->publicarjogo($infoJogo);
                     break;
                 case 2:
                     echo "\nDigite seu novo nome do(a) Desenvolvedor(a): ";
                     $novoProfileName = readline();
-                    $userDev->SetProfileName($novoProfileName);
+                    $currentDev->SetUserName($novoProfileName);
                     break;
                 case 3:
                     echo "\nLista de Jogos Publicados:\n";
                     $this->PrintarJogos($bibliotecaDev->GetJogos());
                     break;
+                case 4:
+                    echo "\nPublisher: ";
+                    $publisher_name = readline();
+                    $userDevController->SetPublisherName($publisher_name);
+                    break;
             }
-        } while ($this->opcaoMenu != 4);
+        } while ($this->opcaoMenu != 5);
     }
 
     public function ControlarFluxoBiblioteca(BibliotecaUsuario $bibliotecaUsuario)
     {
         do {
-            $this->PrintrarMenuBiblioteca();
+            echo "\n1- Sua Biblioteca.\n2- Voltar.";
             echo "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
 
@@ -294,7 +277,7 @@ class MenuController
 
                     $jogoEscolhido = $bibliotecaLoja->GetJogoById($idEscolhido);
 
-                    if ($jogoEscolhido != false) {
+                    if ($jogoEscolhido != NULL) {
                         if ($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())) {
                             $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
                             $usuarioController->adicionarCartas($cartasController->getCartasIniciais($jogoEscolhido->getId()));

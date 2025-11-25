@@ -125,7 +125,7 @@ class UsuarioController extends LeEscreveCsv
         }
     }
 
-        public function DeletarAmigoByName(string $friendName): void
+    public function DeletarAmigoByName(string $friendName): void
     {
         if (!$this->IsInCsv($friendName)) {
             echo "\n!!!Usuario nao encontrado!!!\n";
