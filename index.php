@@ -20,7 +20,8 @@ $bibliotecaLoja->adicionarJogoCsv($hollowKnight); */
 while (true) {
     $opcaoTelaLogin = 0;
     $opcaoTelaMenuPrincipal = 0;
-    $loginStatus = false;
+    $loginStatusUser = false;
+    $loginStatusDev = false;
 
     //Loop para login
     do {
@@ -47,9 +48,11 @@ while (true) {
                 if ($tipoLogin === 1) {
                     $informacoesUsuario = $menu->coletarInfoParaLogin();
                     $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                    $loginStatusUser = $loginStatus;
                 } elseif ($tipoLogin === 2) {
                     $informacoesUsuario = $menu->coletarInfoParaLoginDev();
                     $loginStatus = $bancoUsuarios->LogarDev($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                    $loginStatusDev = $loginStatus;
                 } else {
                     echo "\nOpção inválida. Por favor, tente novamente.\n";
                 }
@@ -59,12 +62,12 @@ while (true) {
                 exit();
         }
 
-    } while (!$loginStatus);
+    } while (!$loginStatusUser && !$loginStatusDev);
 
     $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
 
     //Loop para continuar na conta
-    while ($loginStatus) {
+    while ($loginStatusUser) {
         $menu->PrintarMenuPrincipal();
         $opcaoTelaMenuPrincipal = (int)readline();
 
@@ -79,7 +82,7 @@ while (true) {
                 $menu->ControlarFluxoUsuario($usuarioController);
                 break;
             case 4:
-                $loginStatus = false;
+                $loginStatusUser = false;
                 break;
             case 5:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
