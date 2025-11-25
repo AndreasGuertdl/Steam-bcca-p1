@@ -4,6 +4,7 @@ namespace Bcca2\Steam\Controller;
 
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Model\Usuario;
+use Bcca2\Steam\Model\CartaController;
 
 class MenuController
 {
@@ -21,7 +22,7 @@ class MenuController
 
     public function PrintarMenuUsuario(): void
     {
-        echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Adicionar Amigo.\n4- Lista de Amigos.\n5- Remover Amigo.\n6- Voltar.";
+        echo "\n1- Adicionar Saldo.\n2- Alterar Username.\n3- Adicionar Amigo.\n4- Lista de Amigos.\n5- Voltar.";
     }
 
     public function PrintrarMenuBiblioteca(): void
@@ -139,19 +140,8 @@ class MenuController
                     echo "\nLista de Amigos:\n";
                     $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
                     break;
-                case 5:
-                    echo "\nLista de Amigos:\n";
-                    $this->PrintarListaAmigos($usuarioController->GetCurrentUser()->GetUserFriendList());
-                    if(count($usuarioController->GetCurrentUser()->GetUserFriendList()) == 0){
-                        echo "\nVocê ainda não tem amigos :(\n";
-                        break;
-                    }
-                    echo "\nDigite o USERNAME do Usuario que deseja remover como amigo: ";
-                    $username = readline();
-                    $usuarioController->DeletarAmigoByName($username);
-                    break;
             }
-        } while ($this->opcaoMenu != 6);
+        } while ($this->opcaoMenu != 5);
     }
 
     public function ControlarFluxoBiblioteca(BibliotecaUsuario $bibliotecaUsuario)
@@ -167,7 +157,7 @@ class MenuController
         } while ($this->opcaoMenu != 2);
     }
 
-    public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController)
+    public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController, CartaController $cartasController)
     {
         do {
             $this->PrintarMenuLoja();
@@ -189,6 +179,7 @@ class MenuController
                     if ($jogoEscolhido != false) {
                         if ($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())) {
                             $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
+                            $usuarioController->adicionarCartas($cartasController->getCartasIniciais($jogoEscolhido));
                         }
                     }
                     break;

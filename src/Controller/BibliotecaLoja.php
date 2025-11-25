@@ -29,7 +29,9 @@ class BibliotecaLoja extends Biblioteca
         fgetcsv($handleRead);
 
         while (($row = fgetcsv($handleRead)) !== false) {
-            $infoJogo = ["id" => $row[0], "nome" => $row[1], "descricao" => $row[2], "data_lancamento" => $row[3], "desenvolvedora" => $row[4], "distribuidora" => $row[5], "genero" => $row[6], "conquistas" => $row[7], "preco" => $row[8], "quantidade_de_analises_positivas" => $row[9], "quantidade_de_analises_negativas" => $row[10]];
+            $infoJogo = ["id" => $row[0], "nome" => $row[1], "descricao" => $row[2], "data_lancamento" => $row[3], 
+            "desenvolvedora" => $row[4], "distribuidora" => $row[5], "genero" => $row[6], "conquistas" => $row[7], 
+            "preco" => $row[8], "quantidade_de_analises_positivas" => $row[9], "quantidade_de_analises_negativas" => $row[10]];
 
             $jogoLoja = new JogoLoja($infoJogo["id"], $infoJogo["nome"], $infoJogo["descricao"], $infoJogo["data_lancamento"], $infoJogo["desenvolvedora"], $infoJogo["distribuidora"], $infoJogo["genero"], $infoJogo["conquistas"], $infoJogo["preco"], $infoJogo["quantidade_de_analises_positivas"], $infoJogo["quantidade_de_analises_negativas"]);
 
