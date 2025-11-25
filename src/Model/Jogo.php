@@ -10,9 +10,10 @@ abstract class Jogo {
     protected string $desenvolvedora;
     protected string $distribuidora;
     protected string $genero;
+    protected array $listaCartas;
     protected $conquistas;
 
-    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas){
+    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas, array $cartas){
         $this->id = $id;
         $this->nome = $nome;
         $this->descricao = $descricao;
@@ -20,7 +21,8 @@ abstract class Jogo {
         $this->desenvolvedora = $desenvolvedora;
         $this->distribuidora = $distribuidora;
         $this->genero = $genero;
-        $this->conquistas = $conquistas;      
+        $this->conquistas = $conquistas;
+        $this->listaCartas = $cartas;
     }
     public function getId(){
         return $this->id;
@@ -45,5 +47,8 @@ abstract class Jogo {
     }
     public function getConquistas(){
         return $this->conquistas;
+    }
+    public function getCartas(){
+        return $this->listaCartas;
     }
 }

@@ -10,12 +10,12 @@ class JogoBiblioteca extends Jogo
     private float $horas_jogadas = 0;
     private int $conquistas_feitas;
 
-    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas, string $idUsuario, int $horas_jogadas, $conquistas_feitas)
+    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas, string $idUsuario, int $horas_jogadas, $conquistas_feitas, array $cartas)
     {
         $this->idUsuario = $idUsuario;
         $this->horas_jogadas = $horas_jogadas;
         $this->conquistas_feitas = $conquistas_feitas;
-        Jogo::__construct($id, $nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas);
+        Jogo::__construct($id, $nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas, $cartas);
     }
     public function GetUserId(): string
     {
