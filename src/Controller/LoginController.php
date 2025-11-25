@@ -142,9 +142,9 @@ class LoginController extends LeEscreveCsv
 
             if(file_exists($pathDev)){
                 $handle = fopen($pathDev, "r");
-                fgetcsv($handle);
+                fgetcsv($handle, 0, ",", "\\"); // Pular header
 
-                while (($dev = fgetcsv($handle)) !== false) {
+                while (($dev = fgetcsv($handle, 0, ",", "\\")) !== false) {
                     if ($dev[1] == $loginUsuario && $dev[2] == $loginSenha) {
                         $this->currentUser = new Usuario($dev[0], $dev[1], $dev[2]);
 

@@ -4,7 +4,6 @@ namespace Bcca2\Steam\Controller;
 
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Model\Usuario;
-use Bcca2\Steam\Controller\CartaController;
 use Bcca2\Steam\Model\UserDev;
 use Bcca2\Steam\Model\BibiliotecaDev;
 
@@ -49,13 +48,12 @@ class MenuController
         }
     }
 
-    public function PrintarListaAmigos(array $amigos): void
-    {
-        if (count($amigos) == 0) {
+    public function PrintarListaAmigos(array $amigos): void {
+        if(count($amigos) == 0){
             echo "\n!!!Nenhum amigo adicionado!!!\n";
         }
-        foreach ($amigos as $amigo) {
-            echo "\n| ", $amigo["friend_name"], "\n";
+        foreach($amigos as $amigo){
+            echo "\n| ", $amigo["friend_name"], "\n" ;
         }
     }
 
@@ -76,7 +74,7 @@ class MenuController
         }
 
         fclose($handle);
-    }
+    }  
 
     public function ColetarInfoNovoUsario(): array
     {
@@ -117,34 +115,36 @@ class MenuController
     }
 
     public function ColetarInfoNovoJogo(UserDev $userDev): array{
-        $infoJogo = array("id" => "", "nome" => "", "descricao" => "", "data_lancamento" => "", "desenvolvedora" => "", "distribuidora" => "", "genero" => "", "conquistas" => "", "preco" => "");
+        $infoJogo = array();
         
         echo "\nDefina o ID do jogo: ";
-        $infoJogo["id"] = readline();
+        $infoJogo[] = trim(readline());
 
         echo "\nDefina o nome do jogo: ";
-        $infoJogo["nome"] = readline();
+        $infoJogo[] = trim(readline());
 
         echo "\nDefina a descricao do jogo: ";
-        $infoJogo["descricao"] = readline();
+        $infoJogo[] = trim(readline());
 
         echo "\nDefina a data de lancamento do jogo: ";
-        $infoJogo["data_lancamento"] = readline();
+        $infoJogo[] = trim(readline());
 
-        echo "\nDefina o(a) desenvolvedor(a) do jogo: ";
-        $infoJogo["desenvolvedora"] = $userDev->GetUsername();
+        $infoJogo[] = $userDev->GetUserId();
 
-        echo "\nDefina a distribuidora do jogo: ";
-        $infoJogo["distribuidora"] = $userDev->GetPublisherName();
+        $infoJogo[] = $userDev->GetPublisherName();
 
         echo "\nDefina o genero do jogo: ";
-        $infoJogo["genero"] = readline();
+        $infoJogo[] = trim(readline());
 
         echo "\nDefina a quantidade de conquistas do jogo: ";
-        $infoJogo["conquistas"] = readline();
-
+        $infoJogo[] = trim(readline());
+    
         echo "\nDefina o preco do jogo: ";
-        $infoJogo["preco"] = readline();
+        $infoJogo[] = (float)trim(readline());
+
+        $infoJogo[] = 0;
+
+        $infoJogo[] = 0;
 
         return $infoJogo;
     }
@@ -182,15 +182,6 @@ class MenuController
         $infoUsuario["senha"] = $loginSenha;
 
         return $infoUsuario;
-    }
-
-    public function printarTodasCartas(array $cartasLoja): void {
-        if (count($cartasLoja) == 0) {
-            echo "\n!!!Nenhum amigo adicionado!!!\n";
-        }
-        foreach ($cartasLoja as $carta) {
-            echo "\n| ", $carta, "\n";
-        }
     }
 
     public function ControlarFluxoUsuario(UsuarioController $usuarioController): void
@@ -233,7 +224,7 @@ class MenuController
         } while ($this->opcaoMenu != 5);
     }
 
-    public function ControlarFluxoDev(UserDev $userDev): void
+    public function ControlarFluxoDev(UserDev $userDev, DevController $devController): void
     {
         do {
             $idCurrentUser = $userDev->GetUserId();
@@ -252,11 +243,19 @@ class MenuController
                 case 2:
                     echo "\nDigite seu novo nome do(a) Desenvolvedor(a): ";
                     $novoProfileName = readline();
-                    $userDev->SetProfileName($novoProfileName);
+                    $userDev->SetUsername($novoProfileName);
+                    $devController->AtualizarUsernameCsv($userDev);
                     break;
                 case 3:
                     echo "\nLista de Jogos Publicados:\n";
-                    $this->PrintarJogos($bibliotecaDev->GetJogos());
+                    $jogosPublicados = $bibliotecaDev->ListarJogos();
+                    if (empty($jogosPublicados)) {
+                        echo "\n!!!Nenhum jogo publicado ainda!!!\n";
+                    } else {
+                        foreach ($jogosPublicados as $jogo) {
+                            echo "\nID: " . $jogo->GetId() . " | Nome: " . $jogo->GetNome() . " | Preco: $" . $jogo->GetPreco() . "\n";
+                        }
+                    }
                     break;
             }
         } while ($this->opcaoMenu != 4);
@@ -275,10 +274,10 @@ class MenuController
         } while ($this->opcaoMenu != 2);
     }
 
-    public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController, CartaController $cartasController)
+    public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController)
     {
         do {
-            echo "\n1- Jogos da Loja.\n2- Comprar Jogo.\n3- Ver Cartas na Loja.\n4- Voltar.";
+            $this->PrintarMenuLoja();
             echo "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
 
@@ -297,14 +296,10 @@ class MenuController
                     if ($jogoEscolhido != false) {
                         if ($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())) {
                             $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
-                            $usuarioController->adicionarCartas($cartasController->getCartasIniciais($jogoEscolhido->getId()));
                         }
                     }
                     break;
-                case 3:
-                    $this->printarTodasCartas($cartasController->GetListaCartas());
-                    break;
             }
-        } while ($this->opcaoMenu != 4);
+        } while ($this->opcaoMenu != 3);
     }
 }
