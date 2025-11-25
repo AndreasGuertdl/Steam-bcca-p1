@@ -4,7 +4,7 @@ namespace Bcca2\Steam\Model;
 
 use Bcca2\Steam\Controller\BibliotecaDev;
 
-class Usuario
+class UserDev
 {
     private string $id;
     private string $username;
@@ -12,23 +12,25 @@ class Usuario
     private string $senha;
     private BibliotecaDev $biblioteca;
 
-    function __construct(string $id, string $username, string $senha)
+    function __construct(string $id, string $username, string $senha, string $publisher_name = "")
     {
         $this->biblioteca = new BibliotecaDev($id);
-        $this->profile_name = $username;
 
         $this->id = $id;
         $this->username = $username;
         $this->senha = $senha;
+        $this->publisher_name = $publisher_name;
     }
-    public function SetProfileName(string $publisher_name): void
+    public function SetPublisherName(string $publisher_name): void
     {
         $this->publisher_name = $publisher_name;
     }
-    public function SetSaldo(float $valor): void
+
+    public function SetProfileName(string $publisher_name): void
     {
-        $this->saldo = $valor;
+        $this->SetPublisherName($publisher_name);
     }
+
     public function GetUserId(): string
     {
         return $this->id;
@@ -45,32 +47,10 @@ class Usuario
     {
         return $this->publisher_name;
     }
-    public function GetSaldo(): float
-    {
-        return $this->saldo;
-    }
-    public function GetUserBiblioteca(): BibliotecaUsuario
+
+    public function GetBibliotecaDev(): BibliotecaDev
     {
         return $this->biblioteca;
-    }
-    public function GetUserFriendList(): array
-    {
-        return $this->lista_amigos;
-    }
-
-    public function AdicionarAmigo(array $amigoInfo): void
-    {
-        $this->lista_amigos[] = $amigoInfo;
-    }
-
-    public function isInFriendList(string $amigo_nome): bool {
-        foreach($this->lista_amigos as $amigo){
-            if($amigo["friend_name"] == $amigo_nome){
-                return true;
-            }
-        }
-        
-        return false;
     }
     public function __toString()
     {

@@ -2,6 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
+use Bcca2\Steam\Controller\DevController;
 use Bcca2\Steam\Controller\LoginController;
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Controller\MenuController;
@@ -65,7 +66,28 @@ while (true) {
     } while (!$loginStatusUser && !$loginStatusDev);
 
     $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
+    $devController = null;
 
+    if ($loginStatusDev) {
+        $devController = new DevController($bancoUsuarios->GetCurrentDev());
+    }
+
+    while ($loginStatusDev) {
+        $menu->PrintarMenuDev();
+        $opcaoTelaMenuDev = (int)readline();
+
+        switch ($opcaoTelaMenuDev) {
+            case 1:
+                $menu->ControlarFluxoDev($devController->GetCurrentUser());
+                break;
+            case 2:
+                $loginStatusDev = false;
+                break;
+            case 3:
+                echo "\nAdeus meu camarada tenha um bom dia.\n";
+                exit();
+        }
+    }
     //Loop para continuar na conta
     while ($loginStatusUser) {
         $menu->PrintarMenuPrincipal();

@@ -4,6 +4,8 @@ namespace Bcca2\Steam\Controller;
 
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Model\Usuario;
+use Bcca2\Steam\Model\UserDev;
+use Bcca2\Steam\Model\BibiliotecaDev;
 
 class MenuController
 {
@@ -162,6 +164,23 @@ class MenuController
 
         return $infoUsuario;
     }
+    
+    public function coletarInfoParaLoginDev(): array
+    {
+        $infoUsuario = array("username" => "", "senha" => "");
+        $loginUsuario = null;
+        $loginSenha = null;
+
+        echo "\nLOGIN DE USUARIO\nUSUARIO: ";
+        $loginUsuario = readline();
+        $infoUsuario["username"] = $loginUsuario;
+
+        echo "\nSENHA: ";
+        $loginSenha = readline();
+        $infoUsuario["senha"] = $loginSenha;
+
+        return $infoUsuario;
+    }
 
     public function ControlarFluxoUsuario(UsuarioController $usuarioController): void
     {
@@ -203,29 +222,30 @@ class MenuController
         } while ($this->opcaoMenu != 5);
     }
 
-    public function ControlarFluxoDev(BibliotecaDev $bibliotecaDev): void
+    public function ControlarFluxoDev(UserDev $userDev): void
     {
         do {
-            $idCurrentUser = $usuarioController->GetCurrentUser()->GetUserId();
+            $idCurrentUser = $userDev->GetUserId();
+            $bibliotecaDev = $userDev->GetBibliotecaDev();
 
-            $this->printarMenuUsuario();
-            echo $usuarioController->GetCurrentUser()->__toString() . "\nSelecione uma das opcoes acima: ";
+            $this->PrintarMenuDev();
+            echo $userDev->__toString() . "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
 
             switch ($this->opcaoMenu) {
                 case 1:
                     echo "\nDigite as informações do jogo: ";
-                    $infoJogo = $this->ColetarInfoNovoJogo($usuarioController->GetCurrentUser());
+                    $infoJogo = $this->ColetarInfoNovoJogo($userDev);
                     $bibliotecaDev->publicarjogo($infoJogo);
                     break;
                 case 2:
                     echo "\nDigite seu novo nome do(a) Desenvolvedor(a): ";
                     $novoProfileName = readline();
-                    $usuarioController->MudarProfileName($idCurrentUser, $novoProfileName);
+                    $userDev->SetProfileName($novoProfileName);
                     break;
                 case 3:
                     echo "\nLista de Jogos Publicados:\n";
-                    $this->PrintarJogos($usuarioController->GetCurrentUser()->GetBib()->GetJogos());
+                    $this->PrintarJogos($bibliotecaDev->GetJogos());
                     break;
             }
         } while ($this->opcaoMenu != 4);
