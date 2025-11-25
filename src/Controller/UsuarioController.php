@@ -96,7 +96,7 @@ class UsuarioController extends LeEscreveCsv
 
         $friendInfo = ["id_usuario" => $this->currentUser->GetUserId(), "id_amigo" => $friend[0], "friend_name" => $friend[1]];
 
-        echo "\n!!!Adicionando ", $friendInfo["friend_name"], " como amigo...\n";
+        echo "Adicionando ", $friendInfo["friend_name"], " como amigo...";
 
         if($this->UpdateCsv($friendInfo, $path)){
             echo "\n!!!Amigo adicionado com sucesso!!!\n";

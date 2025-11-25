@@ -1,3 +1,8 @@
 id_usuario,id_amigo,amigo_name
 65d2c829,9de21250,marcos
 65d2c829,10d51562,carlinhos
+9de21250,65d2c829,andreas
+f75befe9,65d2c829,andreas
+9de21250,f75befe9,meg
+65d2c829,f75befe9,meg
+9de21250,10d51562,carlinhos
