@@ -21,4 +21,3 @@ Na tela de Usuário você poderá adicionar Saldo para sua conta (necessário pa
 ANDREAS GUERT DE LIMA, RA - 2086833<br>
 GUILHERME BERTUCCINI RIBEIRO, RA - 2029851<br>
 JOAO FILIPE RAMOS RIBEIRO SANCHEZ, RA - 2089420<br>
-HENRIQUE PARDINI HURTIG, RA - 2030420<br>
