@@ -10,7 +10,7 @@ use Bcca2\Steam\Model\JogoLoja;
 use Bcca2\Steam\Model\Usuario;
 use Bcca2\Steam\Model\UserDev;
 
-class BibliotecaUsuario extends Biblioteca
+class BibliotecaDev extends Biblioteca
 {
     protected string $idUsuario;
 
@@ -48,32 +48,53 @@ class BibliotecaUsuario extends Biblioteca
         fclose($handleRead);
     }
 
-    public function publicarjogo(array $infoJogo) : bool
+    public function publicarjogo(array $infoJogo)
     {
-        $jogoLoja = new JogoLoja($infoJogo[0], $infoJogo[1], $infoJogo[2], $infoJogo[3], $infoJogo[4], $infoJogo[5], $infoJogo[6], $infoJogo[7], $infoJogo[8], 0, 0);
+        
         $pathCsvLoja = dirname(__DIR__) . '\components\BibliotecaLoja.csv';
 
-        $jogoLoja = $this->getCsvRowById($idJogo, $pathCsvLoja);
+        $idJogo = $infoJogo[0];
 
-    
+        if ($idJogo === null || $idJogo === ""){
+            echo "\n!!!Informacoes invalidas para publicar o jogo na loja!!!\n";
+            return;
+        }
+
         if (file_exists($this->path)) {
-            $idJogo = ["id" => $infoJogo[0]];
+            $handleRead = fopen($pathCsvLoja, "r");
+            fgetcsv($handleRead);
 
-            if ($this->IsInCsv($idJogo["id"])) {
-                echo "\n!!!Jogo ja incluso na loja!!!\n";
-            } else {
-                if ($this->UpdateCsv($infoJogo)) {
-                    echo "\n!!!Jogo adicionado a loja com sucesso!!!\n";
-
-                    $this->jogos [] = $jogoLoja;
-
-                    //$this->PreencherObj();
-                } else {
-                    echo "\n!!!Algo de errado ao adicionar o jogo na loja!!!\n";
+            while (($row = fgetcsv($handleRead)) !== false) {
+                if ($row[0] == $idJogo) {
+                    echo "\n!!!Jogo ja publicado na loja!!!\n";
+                    fclose($handleRead);
+                    return;
                 }
             }
-        } else {
-            echo "\n!!!Banco de Dados inexistente!!!Contate o menino da TI!!!\n";
         }
+        $jogoLoja = new JogoLoja($infoJogo[0], $infoJogo[1], $infoJogo[2], $infoJogo[3], $infoJogo[4], $infoJogo[5], $infoJogo[6], (int)$infoJogo[7], (float)$infoJogo[8], 0, 0);
+        if ($this->UpdateCsv($jogoLoja->toArray(), $pathCsvLoja)) {
+            echo "\nJogo publicado com sucesso na loja!\n";
+        } else {
+            echo "\nFalha ao publicar o jogo na loja.\n";
+        }
+    }
+    public function ListarJogos(): array {
+        $pathCsvLoja = dirname(__DIR__) . '\components\BibliotecaLoja.csv';
+        $jogosPublicados = array();
+
+        if (file_exists($pathCsvLoja)) {
+            $handleRead = fopen($pathCsvLoja, "r");
+            fgetcsv($handleRead);
+
+            while (($row = fgetcsv($handleRead)) !== false) {
+                if ($row[4] == $this->idUsuario) {
+                    $jogoLoja = new JogoLoja($row[0], $row[1], $row[2], $row[3], $row[4], $row[5], $row[6], (int)$row[7], (float)$row[8], (int)$row[9], (int)$row[10]);
+                    array_push($jogosPublicados, $jogoLoja);
+                }
+            }
+            fclose($handleRead);
+        }
+        return $jogosPublicados;
     }
 }

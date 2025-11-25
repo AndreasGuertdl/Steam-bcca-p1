@@ -42,4 +42,20 @@ class JogoLoja extends Jogo
     {
         return "\n|" . $this->getId() . " - $this->nome          LANCAMENTO: $this->data_de_lancamento\nDESCRICAO: $this->descricao\nGENERO: $this->genero.\nPRECO: " . number_format($this->preco, 2, ',', '.') . "R$.";
     }
+    public function toArray(): array
+    {
+        return [
+            $this->getId(),
+            $this->nome,
+            $this->descricao,
+            $this->data_de_lancamento,
+            $this->desenvolvedora,
+            $this->distribuidora,
+            $this->genero,
+            $this->conquistas,
+            $this->preco,
+            $this->quantidade_de_analises_positivas,
+            $this->quantidade_de_analises_negativas,
+        ];
+    }
 }

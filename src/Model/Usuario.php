@@ -32,6 +32,9 @@ class Usuario
     {
         $this->saldo = $valor;
     }
+    public function SetListaAmigos(array $lista_amigos){
+        $this->lista_amigos = $lista_amigos;
+    }
     public function GetUserId(): string
     {
         return $this->id;
