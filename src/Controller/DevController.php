@@ -5,7 +5,7 @@ namespace Bcca2\Steam\Controller;
 use Bcca2\Steam\Model\UserDev;
 use Bcca2\Steam\Controller\LeEscreveCsv;
 
-class UsuarioController extends LeEscreveCsv
+class DevController extends LeEscreveCsv
 {
     private UserDev $currentUser;
 
@@ -37,7 +37,7 @@ class UsuarioController extends LeEscreveCsv
         fclose($handleUsersData);
     }
 
-    public function GetCurrentUser(): Usuario
+    public function GetCurrentUser(): UserDev
     {
         return $this->currentUser;
     }

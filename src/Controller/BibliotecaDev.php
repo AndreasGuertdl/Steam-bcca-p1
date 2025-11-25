@@ -10,7 +10,7 @@ use Bcca2\Steam\Model\JogoLoja;
 use Bcca2\Steam\Model\Usuario;
 use Bcca2\Steam\Model\UserDev;
 
-class BibliotecaUsuario extends Biblioteca
+class BibliotecaDev extends Biblioteca
 {
     protected string $idUsuario;
 
