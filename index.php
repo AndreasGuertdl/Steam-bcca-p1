@@ -7,13 +7,10 @@ use Bcca2\Steam\Controller\LoginController;
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Controller\MenuController;
 use Bcca2\Steam\Controller\BibliotecaLoja;
-use Bcca2\Steam\Controller\CartaController;
-use Bcca2\Steam\Model\Carta;
 
 $bancoUsuarios = new LoginController;
 $menu = new MenuController;
 $bibliotecaLoja = new BibliotecaLoja;
-$cartaController = new CartaController("oiii");
 
 /* $dragonsDogma = [1, "Dragon's Dogma", "Talvez o melhor jogo ja criado.", "2010", "Capcom", "Jesus Cristo", "Action-RPG", "42", 60, 100, 1];
 $hollowKnight = [2, "Hollow Knight", "O pior jogo ja feito.", "1800", "Team Ladybug", "Team Ladybug", "Walking Simulator", "26", 1, 1, 1000];
@@ -60,7 +57,7 @@ while (true) {
 
                 if ($tipoLogin === 1) {
                     $informacoesUsuario = $menu->coletarInfoParaLogin();
-                    $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                    $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"], false);
                     $loginStatusUser = $loginStatus;
                 } elseif ($tipoLogin === 2) {
                     $informacoesUsuario = $menu->coletarInfoParaLogin();
@@ -76,6 +73,15 @@ while (true) {
         }
     } while (!$loginStatusUser && !$loginStatusDev);
 
+    $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
+    $devController = null;
+
+    if ($loginStatusDev) {
+        $devController = new DevController($bancoUsuarios->GetCurrentDev());
+        $menu->ControlarFluxoDev($devController->GetCurrentUser(), $devController);
+        $loginStatusDev = false;
+    }
+    //Loop para continuar na conta
     //Loop para menu Usuario
     while ($loginStatusUser) {
         $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
@@ -88,7 +94,7 @@ while (true) {
                 $menu->ControlarFluxoBiblioteca($bancoUsuarios->GetCurrentUser()->GetUserBiblioteca());
                 break;
             case 2:
-                $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $usuarioController, $cartaController);
+                $menu->ControlarFluxoLoja($bibliotecaLoja, $bancoUsuarios->GetCurrentUser()->GetUserBiblioteca(), $usuarioController);
                 break;
             case 3:
                 $menu->ControlarFluxoUsuario($usuarioController);
@@ -99,28 +105,6 @@ while (true) {
             case 5:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
                 exit();
-        }
-    }
-
-    //Loop para menu Dev
-    while ($loginStatusDev) {
-        $devController = new DevController($bancoUsuarios->GetCurrentDev());
-
-        while ($loginStatusDev) {
-            $menu->ControlarFluxoDev($devController);
-            $opcaoTelaMenuDev = (int)readline();
-
-            switch ($opcaoTelaMenuDev) {
-                case 1:
-                    
-                    break;
-                case 2:
-                    $loginStatusDev = false;
-                    break;
-                case 3:
-                    echo "\nAdeus meu camarada tenha um bom dia.\n";
-                    exit();
-            }
         }
     }
 }

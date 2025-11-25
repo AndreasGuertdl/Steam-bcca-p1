@@ -1,5 +1,5 @@
-id,name,senha
-2fd2b775,123,123
-25b587b8,andr,andr
-138683e6,carl,carlinhos
-5f158b05,marcos,marcos
+id,name,senha,publisher_name
+2fd2b775,Quad,123,Nintendo
+4bbdd9e9,GameFreak,123,Nintendo
+a74a4ec4,Quad,123,Nintendo
+c26c841d,Marc,\"EA Games"\

@@ -8,13 +8,10 @@ use Bcca2\Steam\Controller\LeEscreveCsv;
 class UsuarioController extends LeEscreveCsv
 {
     private Usuario $currentUser;
-    private string $pathInventario;
 
     public function __construct(Usuario $currentUser)
     {
         $this->path = dirname(__DIR__) . '\components\usersData.csv';
-
-        $this->pathInventario = dirname(__DIR__) . '\components\inventarioUsuarios.csv';
 
         $this->currentUser = $currentUser;
 
@@ -23,8 +20,6 @@ class UsuarioController extends LeEscreveCsv
         $this->PreencherObj();
 
         $this->PreencherFriendList();
-
-        $this->PreencherCardList();
     }
 
     protected function PreencherObj(): void
@@ -58,7 +53,7 @@ class UsuarioController extends LeEscreveCsv
 
     public function PreencherFriendList()
     {
-        if ($this->IsListaAtualizada($this->currentUser->GetUserFriendList())) {
+        if($this->IsListaAtualizada($this->currentUser->GetUserFriendList())){
             return;
         }
 
@@ -76,20 +71,6 @@ class UsuarioController extends LeEscreveCsv
         fclose($handleFriendsData);
     }
 
-    public function PreencherCardList()
-    {
-        if ($this->IsListaAtualizada($this->currentUser->getCartas())) {
-            return;
-        }
-
-        $handleCardsData =  fopen($this->pathInventario, "r");
-
-        while (($card = fgetcsv($handleCardsData)) !== false) {
-            $cardInfo = array("id_carta" => $card[0], "id_jogo" => $card[1], "id_usuario" => $card[2], "nome_carta" => $card[3]);
-            $this->currentUser->AdicionarCartas($cardInfo);
-        }
-    }
-
     public function AdicionarAmigoByName(string $friendName): void
     {
         if (!$this->IsInCsv($friendName)) {
@@ -97,14 +78,14 @@ class UsuarioController extends LeEscreveCsv
             return;
         }
 
-        if ($friendName == $this->currentUser->GetUsername()) {
+        if($friendName == $this->currentUser->GetUsername()){
             echo "\n!!!Nao e possivel adicionar a si mesmo como amigo!!!\n";
             return;
         }
 
-        $path = dirname(__DIR__) . '\components\usersFriends.csv';
+        $path = dirname(__DIR__) . '\components\usersFriends.csv'; 
 
-        if ($this->currentUser->isInFriendList($friendName)) {
+        if($this->currentUser->isInFriendList($friendName)){
             echo "\n!!!Amigo ja adicionado a sua lista de amigos!!!\n";
             return;
         }
@@ -117,10 +98,10 @@ class UsuarioController extends LeEscreveCsv
 
         echo "\n!!!Adicionando ", $friendInfo["friend_name"], " como amigo...\n";
 
-        if ($this->UpdateCsv($friendInfo, $path)) {
+        if($this->UpdateCsv($friendInfo, $path)){
             echo "\n!!!Amigo adicionado com sucesso!!!\n";
-            $this->currentUser->AdicionarAmigo($friendInfo);
-        } else {
+            $this->currentUser->AdicionarAmigo($friendInfo);         
+        }else{
             echo "\n!!!Erro ao adicionar este usuario!!!\n";
         }
     }
@@ -259,46 +240,6 @@ class UsuarioController extends LeEscreveCsv
             fclose($handleWrite);
 
             return true;
-        }
-    }
-
-    public function adicionarCartas(array $cartas)
-    {
-        $temp = $this->currentUser->getCartas();
-
-        array_push($temp, $cartas);
-
-        $this->currentUser->setCartas($temp);
-
-        foreach ($cartas as $carta) {
-            $novaCarta = ["id" => $carta->getId(), "idJogo" => $carta->getIdJogo(), "idUsuario" => $this->currentUser->GetUserId(), "nome" => $carta->getNome()];
-
-            $this->UpdateCsv($novaCarta, $this->pathInventario);
-        }
-    }
-
-    public function removerCarta($cartaId)
-    {
-        $elementoRemover = [$cartaId];
-        $tempUserCartas = array_diff($this->currentUser->getCartas(), $elementoRemover);
-        $this->currentUser->setCartas($tempUserCartas);
-
-        $handleCartaData = fopen($this->pathInventario, "r");
-
-        $tempListaCartas = [];
-
-        while (($carta = fgetcsv($handleCartaData)) !== false) {
-            if ($this->currentUser->getUserId() == $carta[1] && $carta[0] != $cartaId) {
-                $infoCarta = array("id" => $carta[0], "idJogo" => $carta[1]);
-                array_push($this->tempListaCartas, $infoCarta);
-            }
-        }
-        fclose($handleCartaData);
-
-        $handleCartaData = fopen($this->pathInventario, 'w');
-
-        foreach ($tempListaCartas as $carta) {
-            fputcsv($handleCartaData, array_values($carta));
         }
     }
 }

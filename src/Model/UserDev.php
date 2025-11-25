@@ -35,6 +35,10 @@ class UserDev
     {
         return $this->id;
     }
+    public function SetUsername(string $username): void
+    {
+        $this->username = $username;
+    }
     public function GetUsername(): string
     {
         return $this->username;

@@ -8,6 +8,7 @@ use Bcca2\Steam\Controller\LeEscreveCsv;
 class DevController extends LeEscreveCsv
 {
     private UserDev $currentUser;
+    private array $listaUsuarios = array();
 
     public function __construct(UserDev $currentUser)
     {
@@ -15,26 +16,9 @@ class DevController extends LeEscreveCsv
 
         $this->currentUser = $currentUser;
 
-        $this->AdicionarNovoDevAoCsv();
-
         $this->PreencherObj();
 
         $this->PreencherJogosPublicados();
-    }
-
-    protected function PreencherObj(): void
-    {
-        $handleUsersData = fopen($this->path, "r");
-
-        while (($user = fgetcsv($handleUsersData)) !== false) {
-            $infoUsuario = array("id" => $user[0], "profile_name" => $user[1], "publisher_name" => $user[2]);
-            if ($this->currentUser->GetUserId() == $infoUsuario["id"]) {
-                $this->currentUser->SetPublisherName($infoUsuario["publisher_name"]);
-                break;
-            }
-        }
-
-        fclose($handleUsersData);
     }
 
     public function GetCurrentUser(): UserDev
@@ -42,6 +26,26 @@ class DevController extends LeEscreveCsv
         return $this->currentUser;
     }
 
+    protected function PreencherObj(): void{
+    $pathCsv = dirname(__DIR__) . '\components\devsLogin.csv';
+    $handle = fopen($pathCsv, "r");
+    fgetcsv($handle); // Pular header
+
+    while (($row = fgetcsv($handle, 0, ",", "\\")) !== false) {
+        if (count($row) >= 3) {
+            $publisherName = "";
+            
+            if (isset($row[3]) && !empty($row[3])) {
+                $publisherName = $row[3];
+            }
+        
+            $userDev = new UserDev(
+                $row[0],  // id
+                $row[1],  // name
+                $row[2],  // senha
+                $publisherName   // publisher_name
+            );
+            array_push($this->listaUsuarios, $userDev);
     public function AdicionarNovoDevAoCsv(): void
     {
         if (!$this->IsInCsv($this->currentUser->GetUserId())) {
@@ -49,14 +53,43 @@ class DevController extends LeEscreveCsv
 
             $this->UpdateCsv($user);
         }
+        }
+        fclose($handle);
+    }
+    public function AdicionarNovoUserAoCsv(): void{
+    $infoUsuario = array(
+        $this->currentUser->GetUserId(),
+        $this->currentUser->GetUsername(),
+        $this->currentUser->GetSenha(),
+        $this->currentUser->GetPublisherName()
+    );
+
+    $pathCsv = dirname(__DIR__) . '\components\devsLogin.csv';
+    $this->UpdateCsv($infoUsuario, $pathCsv);
     }
 
     public function PreencherJogosPublicados()
     {
         $bibliotecaDev = $this->currentUser->GetBibliotecaDev();
 
-        $bibliotecaDev->PreencherObj();
     }
+    
+    public function AtualizarUsernameCsv(UserDev $userDev): void{
+        $pathCsv = dirname(__DIR__) . '\components\devsLogin.csv';
+    
+        if (!file_exists($pathCsv)) {
+            return;
+        }
+    
+        $handle = fopen($pathCsv, "r");
+        $rows = array();
+    
+        $header = fgetcsv($handle, 0, ",", "\\");
+        $rows[] = $header;
+
+        while (($row = fgetcsv($handle, 0, ",", "\\")) !== false) {
+            if ($row[0] == $userDev->GetUserId()) {
+                $row[1] = $userDev->GetUsername();
 
     public function MudarProfileName(string $id, string $novoProfileName): void
     {
@@ -124,16 +157,21 @@ class DevController extends LeEscreveCsv
 
             $handleWrite = fopen($this->path, "w");
 
-            $header = ['id_dev', 'name', 'publisher_name'];
+            $header = ['id_dev', 'name', 'senha' , 'publisher_name'];
             fputcsv($handleWrite, array_values($header));
 
             foreach ($newUserCsv as $user) {
                 fputcsv($handleWrite, array_values($user));
             }
+            $rows[] = $row;
+        }
+        fclose($handle);
 
             echo "\n!!!Publisher atualizada com sucesso!!!\n";
 
             fclose($handleWrite);
         }
+        fclose($handle);
     }
+
 }
