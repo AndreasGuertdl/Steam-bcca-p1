@@ -7,7 +7,7 @@ class Carta{
     protected string $id;
     protected string $idJogo;
 
-    public function __construct($nome, $id, $idJogo){
+    public function __construct($id, $idJogo,$nome){
         $this->nome = $nome;
         $this->id = $id;
         $this->idJogo = $idJogo;
@@ -26,6 +26,6 @@ class Carta{
     }
 
     public function __toString(){
-            echo "Nome: " . $this->nome;
+        return "Nome: " . $this->nome;
     }
 }

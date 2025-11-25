@@ -1,1 +1,11 @@
-idk, id_jogo, nome
+id_carta,id_jogo,nome
+1,1,"dragao"
+2,1,"lagarto"
+3,1,"chimera"
+4,1,"ogro"
+5,1,"guarda"
+6,1,"ciclopes"
+7,2,"silksong"
+8,2,"shovel_knight"
+9,2,"hollow_knight_1"
+10,2,"hollow_knight_2"

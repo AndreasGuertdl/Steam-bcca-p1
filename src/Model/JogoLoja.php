@@ -13,12 +13,12 @@ class JogoLoja extends Jogo
     private $especificacoes;
     private $imagens;
 
-    public function __construct($id, $nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas, $preco, $quantidade_de_analises_positivas, $quantidade_de_analises_negativas)
+    public function __construct($id, $nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas, $preco, $quantidade_de_analises_positivas, $quantidade_de_analises_negativas, array $cartas)
     {
         $this->preco = $preco;
         $this->quantidade_de_analises_positivas = $quantidade_de_analises_positivas;
         $this->$quantidade_de_analises_negativas = $quantidade_de_analises_negativas;
-        Jogo::__construct($id, $nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas);
+        Jogo::__construct($id, $nome, $descricao, $data_de_lancamento, $desenvolvedora, $distribuidora, $genero, $conquistas, $cartas);
     }
 
     public function SetSteamPage($preco, $especificacoes)

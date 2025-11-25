@@ -13,7 +13,7 @@ abstract class Jogo {
     protected array $listaCartas;
     protected $conquistas;
 
-    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas, $cartas){
+    public function __construct(string $id, string $nome, string $descricao, string $data_de_lancamento, string $desenvolvedora, string $distribuidora, string $genero, $conquistas, array $cartas){
         $this->id = $id;
         $this->nome = $nome;
         $this->descricao = $descricao;

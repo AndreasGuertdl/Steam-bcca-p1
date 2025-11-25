@@ -4,7 +4,7 @@ namespace Bcca2\Steam\Controller;
 
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Model\Usuario;
-use Bcca2\Steam\Model\CartaController;
+use Bcca2\Steam\Controller\CartaController;
 
 class MenuController
 {
@@ -42,12 +42,13 @@ class MenuController
         }
     }
 
-    public function PrintarListaAmigos(array $amigos): void {
-        if(count($amigos) == 0){
+    public function PrintarListaAmigos(array $amigos): void
+    {
+        if (count($amigos) == 0) {
             echo "\n!!!Nenhum amigo adicionado!!!\n";
         }
-        foreach($amigos as $amigo){
-            echo "\n| ", $amigo["friend_name"], "\n" ;
+        foreach ($amigos as $amigo) {
+            echo "\n| ", $amigo["friend_name"], "\n";
         }
     }
 
@@ -68,7 +69,7 @@ class MenuController
         }
 
         fclose($handle);
-    }  
+    }
 
     public function ColetarInfoNovoUsario(): array
     {
@@ -102,6 +103,15 @@ class MenuController
         $infoUsuario["senha"] = $loginSenha;
 
         return $infoUsuario;
+    }
+
+    public function printarTodasCartas(array $cartasLoja): void {
+        if (count($cartasLoja) == 0) {
+            echo "\n!!!Nenhum amigo adicionado!!!\n";
+        }
+        foreach ($cartasLoja as $carta) {
+            echo "\n| ", $carta, "\n";
+        }
     }
 
     public function ControlarFluxoUsuario(UsuarioController $usuarioController): void
@@ -160,7 +170,7 @@ class MenuController
     public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController, CartaController $cartasController)
     {
         do {
-            $this->PrintarMenuLoja();
+            echo "\n1- Jogos da Loja.\n2- Comprar Jogo.\n3- Ver Cartas na Loja.\n4- Voltar.";
             echo "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
 
@@ -179,11 +189,14 @@ class MenuController
                     if ($jogoEscolhido != false) {
                         if ($bibliotecaUsuario->comprarJogo($idEscolhido, $usuarioController->GetCurrentUser()->GetSaldo())) {
                             $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser()->GetUserId(), -$jogoEscolhido->GetPreco());
-                            $usuarioController->adicionarCartas($cartasController->getCartasIniciais($jogoEscolhido));
+                            $usuarioController->adicionarCartas($cartasController->getCartasIniciais($jogoEscolhido->getId()));
                         }
                     }
                     break;
+                case 3:
+                    $this->printarTodasCartas($cartasController->GetListaCartas());
+                    break;
             }
-        } while ($this->opcaoMenu != 3);
+        } while ($this->opcaoMenu != 4);
     }
 }

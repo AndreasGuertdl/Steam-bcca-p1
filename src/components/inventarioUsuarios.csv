@@ -1,1 +1,4 @@
-id_usuario, id_carta
+id_carta,id_jogo,id_usuario,nome_carta
+9,2,65d2c829,hollow_knight_1
+10,2,65d2c829,hollow_knight_2
+7,2,65d2c829,silksong
