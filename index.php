@@ -2,6 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
+use Bcca2\Steam\Controller\DevController;
 use Bcca2\Steam\Controller\LoginController;
 use Bcca2\Steam\Controller\UsuarioController;
 use Bcca2\Steam\Controller\MenuController;
@@ -28,7 +29,8 @@ $cartaController->adicionarCarta($carta2); */
 while (true) {
     $opcaoTelaLogin = 0;
     $opcaoTelaMenuPrincipal = 0;
-    $loginStatus = false;
+    $loginStatusUser = false;
+    $loginStatusDev = false;
 
     //Loop para login
     do {
@@ -37,24 +39,65 @@ while (true) {
 
         switch ($opcaoTelaLogin) {
             case 1:
-                $informacoesUsuario = $menu->ColetarInfoNovoUsario();
-                $bancoUsuarios->RegistrarUsuario($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                echo "\n1- Registro de Usuario \n2- Registro de Desenvolvedor\nSelecione uma das opcoes acima: ";
+                $tipoRegistro = (int)readline();
+                if ($tipoRegistro === 1) {
+                    $informacoesUsuario = $menu->ColetarInfoNovoUsario();
+                    $bancoUsuarios->RegistrarUsuario($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                } elseif ($tipoRegistro === 2) {
+                    $informacoesUsuario = $menu->ColetarInfoNovoDev();
+                    $bancoUsuarios->RegistrarDev($informacoesUsuario["username"], $informacoesUsuario["publisher_name"], $informacoesUsuario["senha"]);
+                } else {
+                    echo "\nOpção inválida. Por favor, tente novamente.\n";
+                }
                 break;
             case 2:
-                $informacoesUsuario = $menu->coletarInfoParaLogin();
-                $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                echo "\n1- Login de Usuario \n2- Login de Desenvolvedor\nSelecione uma das opcoes acima: ";
+                $tipoLogin = (int)readline();
+                if ($tipoLogin === 1) {
+                    $informacoesUsuario = $menu->coletarInfoParaLogin();
+                    $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                    $loginStatusUser = $loginStatus;
+                } elseif ($tipoLogin === 2) {
+                    $informacoesUsuario = $menu->coletarInfoParaLoginDev();
+                    $loginStatus = $bancoUsuarios->LogarDev($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                    $loginStatusDev = $loginStatus;
+                } else {
+                    echo "\nOpção inválida. Por favor, tente novamente.\n";
+                }
                 break;
             case 3:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
                 exit();
         }
 
-    } while (!$loginStatus);
+    } while (!$loginStatusUser && !$loginStatusDev);
 
     $usuarioController = new UsuarioController($bancoUsuarios->GetCurrentUser());
+    $devController = null;
 
+    if ($loginStatusDev) {
+        $devController = new DevController($bancoUsuarios->GetCurrentDev());
+    }
+
+    while ($loginStatusDev) {
+        $menu->PrintarMenuDev();
+        $opcaoTelaMenuDev = (int)readline();
+
+        switch ($opcaoTelaMenuDev) {
+            case 1:
+                $menu->ControlarFluxoDev($devController->GetCurrentUser());
+                break;
+            case 2:
+                $loginStatusDev = false;
+                break;
+            case 3:
+                echo "\nAdeus meu camarada tenha um bom dia.\n";
+                exit();
+        }
+    }
     //Loop para continuar na conta
-    while ($loginStatus) {
+    while ($loginStatusUser) {
         $menu->PrintarMenuPrincipal();
         $opcaoTelaMenuPrincipal = (int)readline();
 
@@ -69,7 +112,7 @@ while (true) {
                 $menu->ControlarFluxoUsuario($usuarioController);
                 break;
             case 4:
-                $loginStatus = false;
+                $loginStatusUser = false;
                 break;
             case 5:
                 echo "\nAdeus meu camarada tenha um bom dia.\n";
