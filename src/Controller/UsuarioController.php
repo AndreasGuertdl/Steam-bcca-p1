@@ -20,6 +20,8 @@ class UsuarioController extends LeEscreveCsv
         $this->PreencherObj();
 
         $this->PreencherFriendList();
+      
+      $this->PreencherCardList();
     }
 
     protected function PreencherObj(): void
@@ -69,6 +71,20 @@ class UsuarioController extends LeEscreveCsv
         }
 
         fclose($handleFriendsData);
+    }
+  
+   public function PreencherCardList()
+    {
+        if ($this->IsListaAtualizada($this->currentUser->getCartas())) {
+            return;
+        }
+
+        $handleCardsData =  fopen($this->pathInventario, "r");
+
+        while (($card = fgetcsv($handleCardsData)) !== false) {
+            $cardInfo = array("id_carta" => $card[0], "id_jogo" => $card[1], "id_usuario" => $card[2], "nome_carta" => $card[3]);
+            $this->currentUser->AdicionarCartas($cardInfo);
+        }
     }
 
     public function AdicionarAmigoByName(string $friendName): void
@@ -242,6 +258,44 @@ class UsuarioController extends LeEscreveCsv
             fclose($handleWrite);
 
             return true;
+        }
+    }
+  public function adicionarCartas(array $cartas)
+    {
+        $temp = $this->currentUser->getCartas();
+
+        array_push($temp, $cartas);
+
+        $this->currentUser->setCartas($temp);
+
+        foreach ($cartas as $carta) {
+            $novaCarta = ["id" => $carta->getId(), "idJogo" => $carta->getIdJogo(), "idUsuario" => $this->currentUser->GetUserId(), "nome" => $carta->getNome()];
+
+            $this->UpdateCsv($novaCarta, $this->pathInventario);
+        }
+    }
+  public function removerCarta($cartaId)
+    {
+        $elementoRemover = [$cartaId];
+        $tempUserCartas = array_diff($this->currentUser->getCartas(), $elementoRemover);
+        $this->currentUser->setCartas($tempUserCartas);
+
+        $handleCartaData = fopen($this->pathInventario, "r");
+
+        $tempListaCartas = [];
+
+        while (($carta = fgetcsv($handleCartaData)) !== false) {
+            if ($this->currentUser->getUserId() == $carta[1] && $carta[0] != $cartaId) {
+                $infoCarta = array("id" => $carta[0], "idJogo" => $carta[1]);
+                array_push($this->tempListaCartas, $infoCarta);
+            }
+        }
+        fclose($handleCartaData);
+
+        $handleCartaData = fopen($this->pathInventario, 'w');
+
+        foreach ($tempListaCartas as $carta) {
+            fputcsv($handleCartaData, array_values($carta));
         }
     }
 }

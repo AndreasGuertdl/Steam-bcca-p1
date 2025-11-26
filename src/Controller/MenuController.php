@@ -129,7 +129,6 @@ class MenuController
         return $infoJogo;
     }
 
-
     public function coletarInfoParaLogin(): array
     {
         $infoUsuario = array("username" => "", "senha" => "");
@@ -269,7 +268,7 @@ class MenuController
     public function ControlarFluxoLoja(BibliotecaLoja $bibliotecaLoja, BibliotecaUsuario $bibliotecaUsuario, UsuarioController $usuarioController)
     {
         do {
-            $this->PrintarMenuLoja();
+             echo "\n1- Jogos da Loja.\n2- Comprar Jogo.\n3- Ver Cartas na Loja.\n4- Voltar.";
             echo "\nSelecione uma das opcoes acima: ";
             $this->opcaoMenu = (int)readline();
 
@@ -291,7 +290,32 @@ class MenuController
                         }
                     }
                     break;
+                case 3:
+                    $cartasLoja = $cartasController->GetListaCartasLoja();
+                    $this->printarTodasCartas($cartasLoja);
+                    
+                    echo "\nDigite o ID da carta que você deseja comprar (-1 para sair): ";
+                    $idEscolhido = (int)readline();
+                    if($idEscolhido == -1)
+                        break;
+                    
+                    $elementoRemover = [$cartasLoja[$idEscolhido-1]];
+                    $tempUserCartas = array_diff($cartasLoja, $elementoRemover);
+                    $cartasLoja = $tempUserCartas;
+
+                    $handleWrite = fopen($cartasController->GetPathLoja(), "w");
+
+                    $header = ['id_carta', 'id_usuario', 'preco'];
+                    fputcsv($handleWrite, array_values($header));
+
+                    foreach ($cartasLoja as $carta) {
+                        fputcsv($handleWrite, array_values($carta));
+                    }
+                    
+                    $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser(), -$elementoRemover);
+                    break;
             }
-        } while ($this->opcaoMenu != 3);
+        } while ($this->opcaoMenu != 4);
     }
 }
+

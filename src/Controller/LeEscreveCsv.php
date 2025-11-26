@@ -2,8 +2,6 @@
 
 namespace Bcca2\Steam\Controller;
 
-use Bcca2\Steam\Enum\StatusDb;
-
 abstract class LeEscreveCsv
 {
     protected string $path;

@@ -8,15 +8,46 @@ use Bcca2\Steam\Model\Carta;
 class CartaController extends LeEscreveCsv
 {
     protected array $listaCartas = [];
-
+    private string $path_loja;
     public function __construct()
     {
         $this->path = dirname(__DIR__) . '\components\cartasJogos.csv';
+        $this->path_loja = dirname(__DIR__) . '\components\cartasLoja.csv';
         $this->PreencherObj();
+    }
+
+    public function GetPathLoja(){
+        return $this->path_loja;
     }
 
     public function GetListaCartas():array{
         return $this->listaCartas;
+    }
+
+    public function GetListaCartasLoja(): array{
+        $handleRead = fopen($this->path_loja, "r");
+
+        while (($carta = fgetcsv($handleRead)) !== false) {
+            $infoCarta = array("id_carta" => $carta[0], "id_usuario" => $carta[1], "preco" => $carta[2]);
+            $newCartasLoja[] = $infoCarta;
+        }
+        return $newCartasLoja;
+    }
+
+    public function IsCartaOnList($carta_id) : bool{
+        foreach($this->listaCartas as $carta){
+            if($carta->id == $carta_id)
+                return true;
+        }
+        return false;
+    }
+    
+    public function GetCartaById($carta_id) : ?Carta{
+        foreach($this->listaCartas as $carta){
+            if($carta->id == $carta_id)
+                return $carta;
+        }
+        return NULL;
     }
 
     protected function PreencherObj(): void
