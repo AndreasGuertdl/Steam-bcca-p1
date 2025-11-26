@@ -1,3 +1,5 @@
-id_jogo_loja,nome,descricao,data_lancamento,desenvolvedora,distribuidora,genero,conquistas,preco,quantidade_de_analises_positivas,quantidade_de_analises_negativas,id_cartas
-1,"Dragon's Dogma","Talvez o melhor jogo ja criado.",2010,Capcom,"Jesus Cristo",Action-RPG,42,60,100,1,1
-2,"Hollow Knight","O pior jogo ja feito.",1800,"Team Ladybug","Team Ladybug","Walking Simulator",26,1,1,1000,2
+id_jogo_loja,nome,descricao,data_lancamento,id_desenvolvedora,distribuidora,genero,conquistas,preco,quantidade_de_analises_positivas,quantidade_de_analises_negativas
+1,"Dragon's Dogma","Talvez o melhor jogo ja criado.",2010,Capcom,"Jesus Cristo",Action-RPG,42,60,100,1
+2,"Hollow Knight","O pior jogo ja feito.",1800,"Team Ladybug","Team Ladybug","Walking Simulator",26,1,1,1000
+5,Sonic,"Jogo de correr",1993,2fd2b775,,Plataforma,5,20,0,
+6,dafdaf,dasdad,hoje,59c3c004,123,acao,42,10000,0,

@@ -8,13 +8,10 @@ use Bcca2\Steam\Controller\LeEscreveCsv;
 class UsuarioController extends LeEscreveCsv
 {
     private Usuario $currentUser;
-    private string $pathInventario;
 
     public function __construct(Usuario $currentUser)
     {
         $this->path = dirname(__DIR__) . '\components\usersData.csv';
-
-        $this->pathInventario = dirname(__DIR__) . '\components\inventarioUsuarios.csv';
 
         $this->currentUser = $currentUser;
 
@@ -23,8 +20,8 @@ class UsuarioController extends LeEscreveCsv
         $this->PreencherObj();
 
         $this->PreencherFriendList();
-
-        $this->PreencherCardList();
+      
+      $this->PreencherCardList();
     }
 
     protected function PreencherObj(): void
@@ -58,7 +55,7 @@ class UsuarioController extends LeEscreveCsv
 
     public function PreencherFriendList()
     {
-        if ($this->IsListaAtualizada($this->currentUser->GetUserFriendList())) {
+        if($this->IsListaAtualizada($this->currentUser->GetUserFriendList())){
             return;
         }
 
@@ -75,8 +72,8 @@ class UsuarioController extends LeEscreveCsv
 
         fclose($handleFriendsData);
     }
-
-    public function PreencherCardList()
+  
+   public function PreencherCardList()
     {
         if ($this->IsListaAtualizada($this->currentUser->getCartas())) {
             return;
@@ -97,14 +94,14 @@ class UsuarioController extends LeEscreveCsv
             return;
         }
 
-        if ($friendName == $this->currentUser->GetUsername()) {
+        if($friendName == $this->currentUser->GetUsername()){
             echo "\n!!!Nao e possivel adicionar a si mesmo como amigo!!!\n";
             return;
         }
 
-        $path = dirname(__DIR__) . '\components\usersFriends.csv';
+        $path = dirname(__DIR__) . '\components\usersFriends.csv'; 
 
-        if ($this->currentUser->isInFriendList($friendName)) {
+        if($this->currentUser->isInFriendList($friendName)){
             echo "\n!!!Amigo ja adicionado a sua lista de amigos!!!\n";
             return;
         }
@@ -117,31 +114,31 @@ class UsuarioController extends LeEscreveCsv
 
         echo "\n!!!Adicionando ", $friendInfo["friend_name"], " como amigo...\n";
 
-        if ($this->UpdateCsv($friendInfo, $path)) {
+        if($this->UpdateCsv($friendInfo, $path)){
             echo "\n!!!Amigo adicionado com sucesso!!!\n";
-            $this->currentUser->AdicionarAmigo($friendInfo);
-        } else {
+            $this->currentUser->AdicionarAmigo($friendInfo);         
+        }else{
             echo "\n!!!Erro ao adicionar este usuario!!!\n";
         }
     }
 
-        public function DeletarAmigoByName(string $friendName): void
+    public function DeletarAmigoByName(string $friendName): bool
     {
         if (!$this->IsInCsv($friendName)) {
             echo "\n!!!Usuario nao encontrado!!!\n";
-            return;
+            return false;
         }
 
         if ($friendName == $this->currentUser->GetUsername()) {
             echo "\n!!!Nao e possivel desfazer amizade com si mesmo!!!\n";
-            return;
+            return false;
         }
 
         $path = dirname(__DIR__) . '\components\usersFriends.csv';
 
         if (!$this->currentUser->isInFriendList($friendName)) {
             echo "\n!!!Este usuário já não é mais seu amigo.....\n";
-            return;
+            return false;
         }
 
         $handleRead = fopen($path, "r");
@@ -170,9 +167,11 @@ class UsuarioController extends LeEscreveCsv
 
         $this->currentUser->AdicionarAmigo($updatedCsv);
 
+        $this->currentUser->SetListaAmigos([]);
+
         $this->PreencherFriendList();
 
-        echo "\n!!!Removendo ", $friendName, " como amigo...\n";
+        return true;
     }
 
     public function MudarProfileName(string $id, string $novoProfileName): void
@@ -261,8 +260,7 @@ class UsuarioController extends LeEscreveCsv
             return true;
         }
     }
-
-    public function adicionarCartas(array $cartas)
+  public function adicionarCartas(array $cartas)
     {
         $temp = $this->currentUser->getCartas();
 
@@ -276,8 +274,7 @@ class UsuarioController extends LeEscreveCsv
             $this->UpdateCsv($novaCarta, $this->pathInventario);
         }
     }
-
-    public function removerCarta($cartaId)
+  public function removerCarta($cartaId)
     {
         $elementoRemover = [$cartaId];
         $tempUserCartas = array_diff($this->currentUser->getCartas(), $elementoRemover);

@@ -8,6 +8,7 @@ use Bcca2\Steam\Controller\LeEscreveCsv;
 class DevController extends LeEscreveCsv
 {
     private UserDev $currentUser;
+    private array $listaUsuarios = array();
 
     public function __construct(UserDev $currentUser)
     {
@@ -15,26 +16,11 @@ class DevController extends LeEscreveCsv
 
         $this->currentUser = $currentUser;
 
-        $this->AdicionarNovoUserAoCsv();
+        $this->AdicionarNovoDevAoCsv();
 
         $this->PreencherObj();
 
         $this->PreencherJogosPublicados();
-    }
-
-    protected function PreencherObj(): void
-    {
-        $handleUsersData = fopen($this->path, "r");
-
-        while (($user = fgetcsv($handleUsersData)) !== false) {
-            $infoUsuario = array("id" => $user[0], "profile_name" => $user[1], "publisher_name" => $user[2]);
-            if ($this->currentUser->GetUserId() == $infoUsuario["id"]) {
-                $this->currentUser->SetProfileName($infoUsuario["profile_name"]);
-                $this->currentUser->SetPublisherName($infoUsuario["publisher_name"]);
-                break;
-            }
-        }
-        fclose($handleUsersData);
     }
 
     public function GetCurrentUser(): UserDev
@@ -42,38 +28,98 @@ class DevController extends LeEscreveCsv
         return $this->currentUser;
     }
 
-    public function AdicionarNovoUserAoCsv(): void
+    protected function PreencherObj(): void
+    {
+        $handle = fopen($this->path, "r");
+
+        while (($user = fgetcsv($handle)) !== false) {
+            if ($this->currentUser->GetUserId() == $user[1]) {
+                $this->currentUser->SetPublisherName(($user[2]));
+            }
+        }
+        fclose($handle);
+    }
+
+    protected function AdicionarNovoDevAoCsv(): void
     {
         if (!$this->IsInCsv($this->currentUser->GetUserId())) {
-            $user = [$this->currentUser->GetUserId(), $this->currentUser->GetProfileName(), $this->currentUser->GetPublisherName()];
+            $user = [$this->currentUser->GetUserId(), $this->currentUser->GetUsername(), $this->currentUser->GetPublisherName()];
 
             $this->UpdateCsv($user);
         }
     }
 
+    public function AdicionarNovoUserAoCsv(): void
+    {
+        $infoUsuario = array(
+            $this->currentUser->GetUserId(),
+            $this->currentUser->GetUsername(),
+            $this->currentUser->GetSenha(),
+            $this->currentUser->GetPublisherName()
+        );
+
+        $pathCsv = dirname(__DIR__) . '\components\devsLogin.csv';
+        $this->UpdateCsv($infoUsuario, $pathCsv);
+    }
+
     public function PreencherJogosPublicados()
     {
         $bibliotecaDev = $this->currentUser->GetBibliotecaDev();
-
-        $bibliotecaDev->PreencherObj();
     }
 
-    public function MudarProfileName(string $id, string $novoProfileName): void
+    public function AtualizarUsernameCsv(string $id, string $novoUser): void
     {
-        if ($novoProfileName == null || strlen($novoProfileName) < 3 || strlen($novoProfileName) > 12) {
-            echo "\n!!!Informacoes invalidas para atualizar seu Profile Name!!!\n";
+        $pathCsv = dirname(__DIR__) . '\components\devsLogin.csv';
+
+        if (!file_exists($pathCsv)) {
+            return;
+        }
+
+        $handleRead = fopen($pathCsv, "r");
+        $newDevLogin = array();
+
+        while (($dev = fgetcsv($handleRead)) !== false) {
+            $infoUsuario = array("id" => $dev[0], "name" => $dev[1], "senha" => $dev[2]);
+
+            if ($infoUsuario["id"] == $id) {
+                $infoUsuario["name"] = $novoUser;
+            }
+
+            $newDevLogin[] = $infoUsuario;
+        }
+
+        fclose($handleRead);
+
+        $handleWrite = fopen($pathCsv, "w");
+
+        foreach ($newDevLogin as $user) {
+            fputcsv($handleWrite, array_values($user));
+        }
+
+        echo "\n!!!Profile atualizado com sucesso!!!\n";
+
+        $this->currentUser->SetUserName($novoUser);
+
+        fclose($handleWrite);
+    }
+
+    public function SetPublisherName(string $publisher_name)
+    {
+        if (strlen($publisher_name) <= 3 || strlen($publisher_name) >= 15) {
+            echo "\n!!!Informacoes invalidas para Publisher!!!\n";
         } else {
+            $this->currentUser->SetPublisherName($publisher_name);
+
             $handleRead = fopen($this->path, "r");
-            $newUserCsv = array();
 
             //Precisa estar aqui para pular a primeira linha (header)
             fgetcsv($handleRead);
 
             while (($user = fgetcsv($handleRead)) !== false) {
-                $infoUsuario = array("id" => $user[0], "profile_name" => $user[1], "saldo" => $user[2]);
+                $infoUsuario = array("id_dev" => $user[0], "name" => $user[1], "publisher_name" => $user[2]);
 
-                if ($infoUsuario["id"] == $id) {
-                    $infoUsuario["profile_name"] = $novoProfileName;
+                if ($infoUsuario["id_dev"] == $this->currentUser->GetUserId()) {
+                    $infoUsuario["publisher_name"] = $publisher_name;
                 }
 
                 $newUserCsv[] = $infoUsuario;
@@ -83,65 +129,15 @@ class DevController extends LeEscreveCsv
 
             $handleWrite = fopen($this->path, "w");
 
-            $header = ['id', 'profile_name', 'saldo', 'id_biblioteca', 'id_lista_amigos', 'id_lista_cartas'];
+            $header = ['id_dev', 'name', 'publisher_name'];
             fputcsv($handleWrite, array_values($header));
 
             foreach ($newUserCsv as $user) {
                 fputcsv($handleWrite, array_values($user));
             }
-
-            echo "\n!!!Profile atualizado com sucesso!!!\n";
-
-            $this->currentUser->SetProfileName($novoProfileName);
-
-            fclose($handleWrite);
-        }
-    }
-
-    public function AtualizarSaldo(string $id, float $valor): bool
-    {
-        if (!is_float($valor)) {
-            echo "\n!!!Nao foi possivel atualizar seu Saldo\nValor passado invalido!!!\n";
-            return false;
-        } else {
-            $path = $this->path;
-            $handleRead = fopen($path, "r");
-            $newUserCsv = array();
-            $novoSaldo = 0;
-
-            //Precisa estar aqui para pular a primeira linha (header)
-            fgetcsv($handleRead);
-
-            while (($user = fgetcsv($handleRead)) !== false) {
-                $infoUsuario = array("id" => $user[0], "profile_name" => $user[1], "saldo" => $user[2]);
-
-                if ($infoUsuario["id"] == $id) {
-                    $novoSaldo = $infoUsuario["saldo"] += $valor;
-
-                    $infoUsuario["saldo"] = $novoSaldo;
-                }
-
-                $newUserCsv[] = $infoUsuario;
-            }
-
-            fclose($handleRead);
-
-            $handleWrite = fopen($path, "w");
-
-            $header = ['id', 'profile_name', 'saldo', 'id_biblioteca', 'id_lista_amigos', 'id_lista_cartas'];
-            fputcsv($handleWrite, array_values($header));
-
-            foreach ($newUserCsv as $user) {
-                fputcsv($handleWrite, array_values($user));
-            }
-
-            echo "\n!!!Saldo atualizado com sucesso!!!\n";
-
-            $this->currentUser->SetSaldo($novoSaldo);
-
             fclose($handleWrite);
 
-            return true;
+            echo "\n!!!Publisher atualizada com sucesso!!!\n";
         }
     }
 }

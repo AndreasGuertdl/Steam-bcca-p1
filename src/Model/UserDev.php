@@ -12,23 +12,23 @@ class UserDev
     private string $senha;
     private BibliotecaDev $biblioteca;
 
-    function __construct(string $id, string $username, string $senha, string $publisher_name = "")
+    function __construct(string $id, string $username, string $senha)
     {
         $this->biblioteca = new BibliotecaDev($id);
 
+        $this->publisher_name = $username;
         $this->id = $id;
         $this->username = $username;
         $this->senha = $senha;
-        $this->publisher_name = $publisher_name;
     }
+    public function SetUserName(string $username): void
+    {
+        $this->username = $username;
+    }
+
     public function SetPublisherName(string $publisher_name): void
     {
         $this->publisher_name = $publisher_name;
-    }
-
-    public function SetProfileName(string $publisher_name): void
-    {
-        $this->SetPublisherName($publisher_name);
     }
 
     public function GetUserId(): string
@@ -57,4 +57,3 @@ class UserDev
         return "\n|USUARIO: $this->username          PUBLISHER: $this->publisher_name|";
     }
 }
-
