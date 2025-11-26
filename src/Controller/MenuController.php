@@ -186,10 +186,11 @@ class MenuController
 
     public function printarTodasCartas(array $cartasLoja): void {
         if (count($cartasLoja) == 0) {
-            echo "\n!!!Nenhum amigo adicionado!!!\n";
+            echo "\n!!!Não tem nenhuma carta à venda!!!\n";
         }
+        $count = 1;
         foreach ($cartasLoja as $carta) {
-            echo "\n| ", $carta, "\n";
+            echo "\n|", $count, "| ", $carta, "\n";
         }
     }
 
@@ -302,7 +303,28 @@ class MenuController
                     }
                     break;
                 case 3:
-                    $this->printarTodasCartas($cartasController->GetListaCartas());
+                    $cartasLoja = $cartasController->GetListaCartasLoja();
+                    $this->printarTodasCartas($cartasLoja);
+                    
+                    echo "\nDigite o ID da carta que você deseja comprar (-1 para sair): ";
+                    $idEscolhido = (int)readline();
+                    if($idEscolhido == -1)
+                        break;
+                    
+                    $elementoRemover = [$cartasLoja[$idEscolhido-1]];
+                    $tempUserCartas = array_diff($cartasLoja, $elementoRemover);
+                    $cartasLoja = $tempUserCartas;
+
+                    $handleWrite = fopen($cartasController->GetPathLoja(), "w");
+
+                    $header = ['id_carta', 'id_usuario', 'preco'];
+                    fputcsv($handleWrite, array_values($header));
+
+                    foreach ($cartasLoja as $carta) {
+                        fputcsv($handleWrite, array_values($carta));
+                    }
+                    
+                    $usuarioController->AtualizarSaldo($usuarioController->GetCurrentUser(), -$elementoRemover);
                     break;
             }
         } while ($this->opcaoMenu != 4);

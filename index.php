@@ -56,7 +56,7 @@ while (true) {
                 $tipoLogin = (int)readline();
                 if ($tipoLogin === 1) {
                     $informacoesUsuario = $menu->coletarInfoParaLogin();
-                    $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"]);
+                    $loginStatus = $bancoUsuarios->Logar($informacoesUsuario["username"], $informacoesUsuario["senha"], false);
                     $loginStatusUser = $loginStatus;
                 } elseif ($tipoLogin === 2) {
                     $informacoesUsuario = $menu->coletarInfoParaLoginDev();
